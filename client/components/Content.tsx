@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Search from "./Search";
 import { Input } from "./ui/input";
+import { ScrollArea, ScrollBar } from "./ui/scroll-area";
 
 export default function Content({
 	className,
@@ -17,7 +18,7 @@ export default function Content({
 					<Input onChange={(e) => setSearchQuery(e.target.value)} type="text" placeholder="Search" className="w-full max-w-[400px]"></Input>
 				</div>
 			</header>
-			<div className="min-h-screen p-8">
+			<div className=" p-8">
 				{searchQuery && <Search query={searchQuery}></Search>}
 				{!searchQuery && children}
 			</div>

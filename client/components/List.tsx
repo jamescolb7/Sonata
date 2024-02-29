@@ -1,5 +1,6 @@
 import {
 	ColumnDef,
+	createColumnHelper,
 	flexRender,
 	getCoreRowModel,
 	useReactTable,
@@ -17,34 +18,33 @@ import { formatTime } from "@/lib/utils"
 
 interface DataTableProps<TData, TValue> {
 	columns: ColumnDef<TData, TValue>[]
-	data: Track[]
+	data: any[]
 }
 
-const columns: ColumnDef<any>[] = [
-	{
-		accessorKey: "album.cover_medium",
+const columnHelper = createColumnHelper<Track>();
+
+const columns = [
+	columnHelper.accessor('album.cover_small', {
 		header: "Song",
-	},
-	{
-		accessorKey: "title",
-		header: ""
-	},
-	{
-		accessorKey: "artist.name",
+		cell: props => <img loading="lazy" className="h-12 w-12 flex-none rounded-md" src={props.getValue()} />
+	}),
+	columnHelper.accessor('title', {
+		header: "",
+		cell: props => props.getValue()
+	}),
+	columnHelper.accessor('artist.name', {
 		header: "Artist",
-	},
-	{
-		accessorKey: "album.title",
+		cell: props => props.getValue()
+	}),
+	columnHelper.accessor('album.title', {
 		header: "Album",
-	},
-	{
-		accessorFn: (row) => {
-			let time = row.duration;
-			return formatTime(time);
-		},
-		header: "Time"
-	}
-]
+		cell: props => props.getValue()
+	}),
+	columnHelper.accessor('duration', {
+		header: "Time",
+		cell: props => formatTime(props.getValue())
+	})
+] as Array<ColumnDef<Track, unknown>>;
 
 export function DataTable<TData, TValue>({
 	columns,
@@ -86,13 +86,7 @@ export function DataTable<TData, TValue>({
 							>
 								{row.getVisibleCells().map((cell, index) => (
 									<TableCell key={cell.id}>
-										{index > 0 && flexRender(cell.column.columnDef.cell, cell.getContext())}
-										{index === 0 && <>
-											<div>
-												<img loading="lazy" className="h-12 w-12 flex-none rounded-md" src={data[rowIndex]?.album.cover_medium}>
-												</img>
-											</div>
-										</>}
+										{flexRender(cell.column.columnDef.cell, cell.getContext())}
 									</TableCell>
 								))}
 							</TableRow>
@@ -115,7 +109,8 @@ interface Track {
 	title: string,
 	album: {
 		title: string,
-		cover_medium: string
+		cover_medium: string,
+		cover_small: string
 	},
 	artist: {
 		name: string
