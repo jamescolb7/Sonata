@@ -1,3 +1,8 @@
+'use client';
+
+import { Track } from '@/lib/Track';
+import { PlayerAtom } from '@/lib/PlayerState';
+import { useSetAtom } from 'jotai';
 import {
 	ColumnDef,
 	createColumnHelper,
@@ -5,7 +10,6 @@ import {
 	getCoreRowModel,
 	useReactTable,
 } from "@tanstack/react-table"
-
 import {
 	Table,
 	TableBody,
@@ -56,6 +60,8 @@ export function DataTable<TData, TValue>({
 		getCoreRowModel: getCoreRowModel(),
 	})
 
+	const setPlayer = useSetAtom(PlayerAtom);
+
 	return (
 		<div className="rounded-md border">
 			<Table>
@@ -82,6 +88,10 @@ export function DataTable<TData, TValue>({
 						table.getRowModel().rows.map((row, rowIndex) => (
 							<TableRow
 								key={row.id}
+								className='cursor-pointer'
+								onClick={() => {
+									setPlayer(row.original)
+								}}
 								data-state={row.getIsSelected() && "selected"}
 							>
 								{row.getVisibleCells().map((cell, index) => (
@@ -102,20 +112,6 @@ export function DataTable<TData, TValue>({
 			</Table>
 		</div>
 	)
-}
-
-interface Track {
-	id: number,
-	title: string,
-	album: {
-		title: string,
-		cover_medium: string,
-		cover_small: string
-	},
-	artist: {
-		name: string
-	},
-	duration: number
 }
 
 interface Props extends React.HTMLAttributes<HTMLElement> {

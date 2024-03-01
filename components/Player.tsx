@@ -1,24 +1,33 @@
 'use client';
 
+import { useAtomValue } from "jotai";
 import { cn } from "@/lib/utils";
 import { Slider } from "./ui/slider";
 import { Play, SkipBack, SkipForward, Volume1 } from "lucide-react";
+import { PlayerAtom } from "@/lib/PlayerState";
+import Link from "next/link";
 
 export default function Player({
 	className,
 	...props
 }: React.HTMLAttributes<HTMLElement>) {
+	const player = useAtomValue(PlayerAtom);
+
 	return (
 		<>
 			<div {...props} className={cn(className, "fixed w-full py-4 bottom-0 border-t bg-background align-center px-4")}>
 				<div className="flex flex-row flex-nowrap justify-between w-full">
 					<div className="flex items-center space-x-3">
-						<img className="h-12 w-12 rounded-md border indent-[-10000px]" src='' alt="" />
+						<img className="h-14 w-14 rounded-md border indent-[-10000px]" src={player?.album ? player?.album?.cover_small : ""} alt="" />
 						<div>
-							<h3 className="text-lg font-semibold">
-								Not Playing
-							</h3>
-							<p className="text-sm"></p>
+							<Link href={`/track/${player.id}`}>
+								<h3 className="text-lg font-semibold">
+									{player.title}
+								</h3>
+							</Link>
+							<p className="text-sm">
+								{player?.artist?.name}
+							</p>
 						</div>
 					</div>
 					<div className="flex items-center flex-row space-x-3">

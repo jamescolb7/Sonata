@@ -12,7 +12,9 @@ import {
 } from "@/components/ui/resizable"
 import Content from "@/components/Content";
 import Player from "@/components/Player";
+import { Provider } from "jotai";
 
+export const revalidate = 86400000;
 export const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
 export const metadata: Metadata = {
@@ -28,20 +30,22 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={cn('dark min-h-screen bg-background font-sans antialiased', inter.variable)}>
-        <NextTopLoader color="#3b83f7" showSpinner={false} />
-        <ResizablePanelGroup direction="horizontal">
-          <ResizablePanel className="hidden lg:block" defaultSize={15} maxSize={20} minSize={15}>
-            <Sidebar />
-          </ResizablePanel>
-          <ResizableHandle className="invisible lg:visible" withHandle />
-          <ResizablePanel defaultSize={85} className="!overflow-auto">
-            <Content>
-              {children}
-            </Content>
-          </ResizablePanel>
-        </ResizablePanelGroup>
-        <Player className="z-[11]" />
-        <Toaster></Toaster>
+        <Provider>
+          <NextTopLoader color="#3b83f7" showSpinner={false} />
+          <ResizablePanelGroup direction="horizontal">
+            <ResizablePanel className="hidden lg:block" defaultSize={15} maxSize={20} minSize={15}>
+              <Sidebar />
+            </ResizablePanel>
+            <ResizableHandle className="invisible lg:visible" withHandle />
+            <ResizablePanel defaultSize={85} className="!overflow-auto">
+              <Content>
+                {children}
+              </Content>
+            </ResizablePanel>
+          </ResizablePanelGroup>
+          <Player className="z-[11]" />
+          <Toaster></Toaster>
+        </Provider>
       </body>
     </html>
   );

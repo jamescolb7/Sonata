@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { ScrollArea, ScrollBar } from "./ui/scroll-area";
 import { cn } from "@/lib/utils";
 
@@ -37,7 +38,7 @@ export function Card({
 			</div>
 			<div className="space-y-1 text-sm overflow-hidden">
 				<h3 className="font-medium leading-none">{title}</h3>
-				<p className="text-xs text-muted-foreground">{subtitle || "Track"}</p>
+				<p className="text-xs text-muted-foreground">{subtitle || "Artist"}</p>
 			</div>
 		</div>
 	)
@@ -58,7 +59,9 @@ export function CardCollection({
 				<div className="flex w-max space-x-4 p-4">
 					{data.map((item, index) => {
 						return (
-							<Card title={item?.expand?.track?.title} image={item?.expand?.track?.data?.album?.cover_medium} width={220} height={220} key={index}></Card>
+							<Link href={`/artist/${item?.id}`} key={index}>
+								<Card title={item?.name} image={item?.picture_xl} width={220} height={220}></Card>
+							</Link>
 						)
 					})}
 				</div>

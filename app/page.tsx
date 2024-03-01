@@ -1,27 +1,56 @@
 import { CardCollection } from "@/components/Cards";
+import List from "@/components/List";
+import { Track } from '@/lib/Track';
 import { Title, Muted } from "@/components/Text";
 import { Separator } from "@/components/ui/separator";
 
 interface Rows {
   title: string
   subtitle: string
-  data: any[]
+  data: any[] | null
 }
 
-const rows: Rows[] = [
-  {
-    title: "Recently Played",
-    subtitle: "Your recently played songs.",
-    data: []
-  },
-  {
-    title: "Recommended",
-    subtitle: "Recommended songs for you.",
-    data: []
+interface Playlist {
+  tracks: {
+    data: Track[]
   }
-]
+}
 
-export default function Home() {
+interface Chart {
+  artists: {
+    data: any[]
+  }
+}
+
+async function getPopular(): Promise<Playlist> {
+  const res = await fetch('https://api-music.inspare.cc/playlist/3155776842');
+  return res.json();
+}
+
+async function getChart(): Promise<Chart> {
+  const res = await fetch('https://api-music.inspare.cc/chart');
+  return res.json();
+}
+
+export default async function Home() {
+  const popularData = getPopular();
+  const chartData = getChart();
+
+  const [popular, chart] = await Promise.all([popularData, chartData]);
+
+  const rows: Rows[] = [
+    {
+      title: "Popular Artists",
+      subtitle: "Currently popular artists in your area.",
+      data: chart.artists.data
+    },
+    {
+      title: "Popular Songs",
+      subtitle: "Currently popular songs in your area.",
+      data: null
+    }
+  ]
+
   return (
     <>
       <div className="space-y-4">
@@ -35,6 +64,7 @@ export default function Home() {
             </div>
           )
         })}
+        <List className="mt-0" data={popular.tracks.data}></List>
       </div>
     </>
   );
