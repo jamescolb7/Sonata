@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 import Link from "next/link";
 import { ScrollArea, ScrollBar } from "./ui/scroll-area";
 import { cn } from "@/lib/utils";
@@ -54,9 +55,9 @@ export function CardCollection({
 	...props
 }: CollectionProps) {
 	return (
-		<div className="relative">
-			<ScrollArea>
-				<div className="flex w-max space-x-4 p-4">
+		<div className="">
+			<ScrollArea className="overflow-hidden">
+				<div className="flex max-w-max space-x-4 p-4">
 					{data.map((item, index) => {
 						return (
 							<Link href={`/artist/${item?.id}`} key={index}>

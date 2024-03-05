@@ -3,7 +3,7 @@
 import React from "react";
 import { Button } from "./ui/button";
 import { ScrollArea } from "./ui/scroll-area";
-import { CogIcon, LucideIcon, CircleUserIcon, KeyIcon, PlayCircleIcon, LayoutGrid, LibraryBig, CircleUserRound } from "lucide-react";
+import { CogIcon, LucideIcon, PlayCircleIcon, LayoutGrid, LibraryBig, CircleUserRound } from "lucide-react";
 import { cn } from '@/lib/utils';
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -50,7 +50,7 @@ export default function Sidebar({
 
 	return (
 		<>
-			<div className={cn('pb-12', className)}>
+			<aside className={cn('bg-background h-screen pb-12 border-r', className)}>
 				<div className="space-y-4 py-4">
 					<div className="px-3 py-2">
 						<h2 className="mb-2 px-4 text-2xl font-semibold tracking-tight">
@@ -72,7 +72,7 @@ export default function Sidebar({
 						</ScrollArea>
 					</div>
 				</div>
-			</div>
+			</aside>
 		</>
 	)
 }
