@@ -3,7 +3,7 @@
 import React from "react";
 import { Button } from "./ui/button";
 import { ScrollArea } from "./ui/scroll-area";
-import { CogIcon, LucideIcon, CircleUserIcon, KeyIcon, PlayCircleIcon, LayoutGrid, LibraryBig, CircleUserRound } from "lucide-react";
+import { CogIcon, LucideIcon, PlayCircleIcon, LayoutGrid, LibraryBig, CircleUserRound } from "lucide-react";
 import { cn } from '@/lib/utils';
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -50,10 +50,10 @@ export default function Sidebar({
 
 	return (
 		<>
-			<div className={cn('pb-12', className)}>
+			<aside className={cn('bg-background h-screen pb-12 border-r', className)}>
 				<div className="space-y-4 py-4">
 					<div className="px-3 py-2">
-						<h2 className="mb-2 px-4 text-lg font-semibold tracking-tight">
+						<h2 className="mb-2 px-4 text-2xl font-semibold tracking-tight">
 							Sonata
 						</h2>
 						<ScrollArea className="h-[300px] px-1">
@@ -62,7 +62,7 @@ export default function Sidebar({
 									let Icon = link.icon;
 									return (
 										<Link key={index} href={link.href}>
-											<Button variant={pathname === link.href ? "secondary" : "ghost"} className="w-full justify-start">
+											<Button variant={pathname === link.href ? "default" : "ghost"} className="w-full justify-start">
 												<Icon className="mr-2 h-4 w-4" /> {link.name}
 											</Button>
 										</Link>
@@ -72,7 +72,7 @@ export default function Sidebar({
 						</ScrollArea>
 					</div>
 				</div>
-			</div>
+			</aside>
 		</>
 	)
 }

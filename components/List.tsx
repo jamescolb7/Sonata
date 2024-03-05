@@ -1,10 +1,15 @@
+'use client';
+
+import { Track } from '@/lib/Track';
+import { PlayerAtom } from '@/lib/PlayerState';
+import { useSetAtom } from 'jotai';
 import {
 	ColumnDef,
+	createColumnHelper,
 	flexRender,
 	getCoreRowModel,
 	useReactTable,
 } from "@tanstack/react-table"
-
 import {
 	Table,
 	TableBody,
@@ -17,34 +22,33 @@ import { formatTime } from "@/lib/utils"
 
 interface DataTableProps<TData, TValue> {
 	columns: ColumnDef<TData, TValue>[]
-	data: Track[]
+	data: any[]
 }
 
-const columns: ColumnDef<any>[] = [
-	{
-		accessorKey: "album.cover_medium",
+const columnHelper = createColumnHelper<Track>();
+
+const columns = [
+	columnHelper.accessor('album.cover_small', {
 		header: "Song",
-	},
-	{
-		accessorKey: "title",
-		header: ""
-	},
-	{
-		accessorKey: "artist.name",
+		cell: props => <img loading="lazy" className="h-12 w-12 flex-none rounded-md" src={props.getValue()} />
+	}),
+	columnHelper.accessor('title', {
+		header: "",
+		cell: props => props.getValue()
+	}),
+	columnHelper.accessor('artist.name', {
 		header: "Artist",
-	},
-	{
-		accessorKey: "album.title",
+		cell: props => props.getValue()
+	}),
+	columnHelper.accessor('album.title', {
 		header: "Album",
-	},
-	{
-		accessorFn: (row) => {
-			let time = row.duration;
-			return formatTime(time);
-		},
-		header: "Time"
-	}
-]
+		cell: props => props.getValue()
+	}),
+	columnHelper.accessor('duration', {
+		header: "Time",
+		cell: props => formatTime(props.getValue())
+	})
+] as Array<ColumnDef<Track, unknown>>;
 
 export function DataTable<TData, TValue>({
 	columns,
@@ -55,6 +59,8 @@ export function DataTable<TData, TValue>({
 		columns,
 		getCoreRowModel: getCoreRowModel(),
 	})
+
+	const setPlayer = useSetAtom(PlayerAtom);
 
 	return (
 		<div className="rounded-md border">
@@ -82,17 +88,15 @@ export function DataTable<TData, TValue>({
 						table.getRowModel().rows.map((row, rowIndex) => (
 							<TableRow
 								key={row.id}
+								className='cursor-pointer'
+								onClick={() => {
+									setPlayer(row.original)
+								}}
 								data-state={row.getIsSelected() && "selected"}
 							>
 								{row.getVisibleCells().map((cell, index) => (
 									<TableCell key={cell.id}>
-										{index > 0 && flexRender(cell.column.columnDef.cell, cell.getContext())}
-										{index === 0 && <>
-											<div>
-												<img loading="lazy" className="h-12 w-12 flex-none rounded-md" src={data[rowIndex]?.album.cover_medium}>
-												</img>
-											</div>
-										</>}
+										{flexRender(cell.column.columnDef.cell, cell.getContext())}
 									</TableCell>
 								))}
 							</TableRow>
@@ -108,19 +112,6 @@ export function DataTable<TData, TValue>({
 			</Table>
 		</div>
 	)
-}
-
-interface Track {
-	id: number,
-	title: string,
-	album: {
-		title: string,
-		cover_medium: string
-	},
-	artist: {
-		name: string
-	},
-	duration: number
 }
 
 interface Props extends React.HTMLAttributes<HTMLElement> {
