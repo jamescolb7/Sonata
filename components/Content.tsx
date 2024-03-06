@@ -1,15 +1,22 @@
 'use client';
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Search from "./Search";
 import { Input } from "./ui/input";
 import { cn } from "@/lib/utils";
+import { usePathname } from "next/navigation";
 
 export default function Content({
 	className,
 	children
 }: React.HTMLAttributes<HTMLElement>) {
+	const pathname = usePathname();
+
 	const [searchQuery, setSearchQuery] = useState('');
+
+	useEffect(() => {
+		setSearchQuery('');
+	}, [pathname])
 
 	return (
 		<div className={cn(className, "flex flex-col w-full")}>

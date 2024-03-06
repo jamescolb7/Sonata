@@ -38,20 +38,24 @@ export default function Player({
 	}
 
 	useEffect(() => {
+		let playerElem: HTMLAudioElement | null = null;
+
+		if (playerRef.current) playerElem = playerRef.current;
+
 		const handleTime = () => {
-			setTime(formatTime(playerRef?.current?.currentTime));
+			setTime(formatTime(playerElem?.currentTime));
 		}
 
 		const changeTrack = () => {
-			setDuration(formatTime(playerRef?.current?.duration));
+			setDuration(formatTime(playerElem?.duration));
 		}
 
-		playerRef?.current?.addEventListener('timeupdate', handleTime);
-		playerRef?.current?.addEventListener('loadedmetadata', changeTrack);
+		playerElem?.addEventListener('loadedmetadata', changeTrack);
+		playerElem?.addEventListener('timeupdate', handleTime);
 
 		return () => {
-			playerRef?.current?.removeEventListener('timeupdate', handleTime);
-			playerRef?.current?.removeEventListener('loadedmetadata', changeTrack);
+			playerElem?.removeEventListener('timeupdate', handleTime);
+			playerElem?.removeEventListener('loadedmetadata', changeTrack);
 		}
 	}, [])
 
