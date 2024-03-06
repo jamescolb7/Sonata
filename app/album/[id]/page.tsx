@@ -17,8 +17,8 @@ type Props = {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
 	const data = await getData(params.id);
 	return {
-		title: data.title,
-		description: `Album by ${data.artist.name}`,
+		title: `${data.title} / Sonata`,
+		description: `Album by ${data.artist.name} on Sonata`,
 		openGraph: {
 			images: [data.cover_big]
 		}
