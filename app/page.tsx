@@ -1,6 +1,6 @@
 import { CardCollection } from "@/components/Cards";
 import List from "@/components/List";
-import { Track } from '@/lib/Track';
+import { Track } from '@/types/Track';
 import { Title, Muted } from "@/components/Text";
 import { Separator } from "@/components/ui/separator";
 

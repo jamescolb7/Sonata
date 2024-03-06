@@ -1,6 +1,6 @@
 'use client';
 
-import { Track } from '@/lib/Track';
+import { Track } from '@/types/Track';
 import { PlayerAtom } from '@/lib/PlayerState';
 import { useSetAtom } from 'jotai';
 import {
