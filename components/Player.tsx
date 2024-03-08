@@ -5,7 +5,7 @@ import { useAtom } from "jotai";
 import { cn } from "@/lib/utils";
 import { Slider } from "./ui/slider";
 import { Pause, Play, SkipBack, SkipForward, Volume1 } from "lucide-react";
-import { PlayerAtom, QueueAtom } from "@/lib/PlayerState";
+import { PlayerAtom, QueueAtom, QueueIndexAtom } from "@/lib/PlayerState";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 
@@ -24,6 +24,8 @@ export default function Player({
 }: React.HTMLAttributes<HTMLElement>) {
 	const [player, setPlayer] = useAtom(PlayerAtom);
 	const [queue, setQueue] = useAtom(QueueAtom);
+	const [queueIndex, setQueueIndex] = useAtom(QueueIndexAtom);
+
 	const [paused, setPaused] = useState<boolean>(true);
 	const [time, setTime] = useState<string | undefined>("00:00");
 	const [duration, setDuration] = useState<string | undefined>("00:00");
@@ -35,6 +37,13 @@ export default function Player({
 		setVolume(e[0]);
 		if (playerRef.current === null) return;
 		playerRef.current.volume = volume / 100;
+	}
+
+	const skip = () => {
+		if (!queueIndex || !queue) return;
+		if (queueIndex >= queue.length - 1) return;
+		setPlayer(queue[queueIndex + 1]);
+		setQueueIndex(queueIndex + 1);
 	}
 
 	useEffect(() => {
@@ -52,10 +61,14 @@ export default function Player({
 
 		playerElem?.addEventListener('loadedmetadata', changeTrack);
 		playerElem?.addEventListener('timeupdate', handleTime);
+		playerElem?.addEventListener('play', () => setPaused(false));
+		playerElem?.addEventListener('pause', () => setPaused(true));
 
 		return () => {
 			playerElem?.removeEventListener('timeupdate', handleTime);
 			playerElem?.removeEventListener('loadedmetadata', changeTrack);
+			playerElem?.removeEventListener('play', () => setPaused(false));
+			playerElem?.removeEventListener('pause', () => setPaused(true));
 		}
 	}, [])
 
@@ -64,10 +77,10 @@ export default function Player({
 		if (playerRef.current === null) return;
 		switch (paused) {
 			case true:
-				playerRef.current.pause();
+				playerRef.current.play();
 				break;
 			case false:
-				playerRef.current.play();
+				playerRef.current.pause();
 				break;
 		}
 	}
@@ -84,15 +97,17 @@ export default function Player({
 									{player.title}
 								</h3>
 							</Link>
-							<p className="text-sm">
-								{player?.artist?.name}
-							</p>
+							<Link href={`/artist/${player?.artist?.id}`}>
+								<p className="text-sm">
+									{player?.artist?.name}
+								</p>
+							</Link>
 						</div>
 					</div>
-					<div className="flex items-center flex-row space-x-3">
+					<div className="flex items-center flex-row space-x-3 cursor-pointer">
 						<SkipBack className="h-8 w-8" />
-						{!paused ? <Play onClick={togglePlay} className="h-8 w-8" /> : <Pause onClick={togglePlay} className="h-8 w-8" />}
-						<SkipForward className="h-8 w-8" />
+						{paused ? <Play onClick={togglePlay} className="h-8 w-8" /> : <Pause onClick={togglePlay} className="h-8 w-8" />}
+						<SkipForward onClick={skip} className="h-8 w-8" />
 					</div>
 					<div className="flex items-center space-x-3 fixed invisible md:static md:visible">
 						<Volume1 className="h-8 w-8" />
@@ -101,7 +116,7 @@ export default function Player({
 					</div>
 				</div>
 			</div>
-			<audio ref={playerRef} src={`TODO`} autoPlay></audio>
+			<audio ref={playerRef} onEnded={skip} src={``} autoPlay></audio>
 		</>
 	)
 }

@@ -61,7 +61,7 @@ export function CardCollection({
 					{data.map((item, index) => {
 						return (
 							<Link href={`/artist/${item?.id}`} key={index}>
-								<Card title={item?.name} image={item?.picture_xl} width={220} height={220}></Card>
+								<Card title={item?.name || item?.title} image={item?.picture_xl || item?.cover_xl} width={220} height={220}></Card>
 							</Link>
 						)
 					})}
