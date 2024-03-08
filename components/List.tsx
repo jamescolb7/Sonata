@@ -1,8 +1,8 @@
 'use client';
 
 import { Track } from '@/types/Track';
-import { PlayerAtom } from '@/lib/PlayerState';
-import { useSetAtom } from 'jotai';
+import { PlayerAtom, QueueAtom, QueueIndexAtom } from '@/lib/PlayerState';
+import { useAtom } from 'jotai';
 import {
 	ColumnDef,
 	createColumnHelper,
@@ -54,13 +54,22 @@ export function DataTable<TData, TValue>({
 	columns,
 	data,
 }: DataTableProps<TData, TValue>) {
+	const [player, setPlayer] = useAtom(PlayerAtom);
+	const [queue, setQueue] = useAtom(QueueAtom);
+	const [queueIndex, setQueueIndex] = useAtom(QueueIndexAtom);
+
 	const table = useReactTable({
 		data,
 		columns,
 		getCoreRowModel: getCoreRowModel(),
 	})
 
-	const setPlayer = useSetAtom(PlayerAtom);
+	const play = (index: number) => {
+		let track: Track = data[index];
+		setPlayer(track);
+		setQueue(data);
+		setQueueIndex(index);
+	}
 
 	return (
 		<div className="rounded-md border">
@@ -90,7 +99,7 @@ export function DataTable<TData, TValue>({
 								key={row.id}
 								className='cursor-pointer'
 								onClick={() => {
-									setPlayer(row.original)
+									play(rowIndex)
 								}}
 								data-state={row.getIsSelected() && "selected"}
 							>

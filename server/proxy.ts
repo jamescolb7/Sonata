@@ -1,8 +1,14 @@
 import { Response } from "express";
-import { Readable } from "stream";
 
-export default async function Proxy(res: Response, url: string) {
-	const data = await fetch(url)
+async function Deezer(url: string) {
+	const data = await fetch(`https://api.deezer.com${url}`);
 	const json = await data.json();
-	return res.send(json);
+	return json;
+}
+
+export default async function Proxy(type: "deezer" | "spotify", res: Response, url: string) {
+	if (type === "deezer") {
+		let data = await Deezer(url);
+		return res.send(data);
+	}
 }
