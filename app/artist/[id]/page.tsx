@@ -1,5 +1,5 @@
 async function getData(id: string) {
-	const res = await fetch(`https://api-music.inspare.cc/artist/${id}`)
+	const res = await fetch(`http://localhost:3000/api/artist/${id}`)
 	return res.json();
 }
 
