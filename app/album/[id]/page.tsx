@@ -1,5 +1,6 @@
 import Header from "@/components/Header";
 import List from "@/components/List";
+import Fetch from "@/lib/Fetch";
 import { Album } from "@/types/Album";
 import { Metadata } from "next";
 
@@ -7,13 +8,7 @@ const base = process.env.BASE_URL as string;
 const base_url = new URL(base);
 
 async function getData(id: string): Promise<Album> {
-	const res = await fetch(`${base}/api/album/${id}`).catch((e) => {
-		throw new Error(e);
-	})
-	if (!res.ok) throw new Error('An error occurred when contacting the API.');
-	let json = await res.json();
-	if (json?.error?.message) throw new Error('The item you requested was not found.');
-	return json;
+	return await Fetch(`album/${id}`);
 }
 
 type Props = {

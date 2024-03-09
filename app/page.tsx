@@ -3,6 +3,7 @@ import List from "@/components/List";
 import { Track } from '@/types/Track';
 import { Title, Muted } from "@/components/Text";
 import { Separator } from "@/components/ui/separator";
+import Fetch from "@/lib/Fetch";
 
 interface Rows {
   title: string
@@ -23,13 +24,11 @@ interface Chart {
 }
 
 async function getPopular(): Promise<Playlist> {
-  const res = await fetch('https://api-music.inspare.cc/playlist/3155776842');
-  return res.json();
+  return Fetch('playlist/3155776842');
 }
 
 async function getChart(): Promise<Chart> {
-  const res = await fetch('https://api-music.inspare.cc/chart');
-  return res.json();
+  return Fetch('chart');
 }
 
 export default async function Home() {

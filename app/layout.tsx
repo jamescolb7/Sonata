@@ -9,7 +9,7 @@ import Content from "@/components/Content";
 import Player from "@/components/Player";
 import { Provider } from "jotai";
 
-export const revalidate = 86400000;
+export const revalidate = 0;
 export const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
 export const metadata: Metadata = {

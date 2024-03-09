@@ -116,7 +116,7 @@ export default function Player({
 					</div>
 				</div>
 			</div>
-			<audio ref={playerRef} onEnded={skip} src={``} autoPlay></audio>
+			<audio ref={playerRef} onEnded={skip} src={`${process.env.NEXT_PUBLIC_PLAYER_URL || ""}/${player.id}.mp3`} autoPlay></audio>
 		</>
 	)
 }
