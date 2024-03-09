@@ -4,7 +4,7 @@ import List from "@/components/List";
 import Fetch from "@/lib/Fetch";
 import { Album } from "@/types/Album";
 import { Artist } from "@/types/Artist";
-import { Track } from "@/types/Track";
+import { type Track } from "@/types/Track";
 import { Metadata } from "next";
 import Link from "next/link";
 
