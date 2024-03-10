@@ -4,7 +4,7 @@ import List from "@/components/List";
 import Fetch from "@/lib/Fetch";
 import { Album } from "@/types/Album";
 import { Artist } from "@/types/Artist";
-import { Track } from "@/types/Track";
+import { type Track } from "@/types/Track";
 import { Metadata } from "next";
 import Link from "next/link";
 
@@ -45,9 +45,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function Track({ params }: Props) {
-	const dataData = await getData(params.id);
-	const tracksData = await getTopTracks(params.id);
-	const albumsData = await getAlbums(params.id);
+	const dataData = getData(params.id);
+	const tracksData = getTopTracks(params.id);
+	const albumsData = getAlbums(params.id);
 
 	const [data, tracks, albums] = await Promise.all([dataData, tracksData, albumsData]);
 

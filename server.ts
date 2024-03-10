@@ -6,7 +6,8 @@ import router from './server/router';
 const port = parseInt(process.env.PORT as string, 10) || 3000;
 const dev = process.env.NODE_ENV !== 'production';
 
-const app = next({ dev });
+//hostname included as a fix for next bug vercel/next.js#54961
+const app = next({ dev, hostname: '127.0.0.1', port });
 
 const handle = app.getRequestHandler();
 
