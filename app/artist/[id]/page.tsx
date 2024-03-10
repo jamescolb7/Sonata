@@ -45,9 +45,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function Track({ params }: Props) {
-	const dataData = await getData(params.id);
-	const tracksData = await getTopTracks(params.id);
-	const albumsData = await getAlbums(params.id);
+	const dataData = getData(params.id);
+	const tracksData = getTopTracks(params.id);
+	const albumsData = getAlbums(params.id);
 
 	const [data, tracks, albums] = await Promise.all([dataData, tracksData, albumsData]);
 
