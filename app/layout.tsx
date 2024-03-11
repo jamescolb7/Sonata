@@ -26,7 +26,7 @@ export default function RootLayout({
       <body className={cn('dark min-h-screen bg-background font-sans antialiased', inter.variable)}>
         <Provider>
           <NextTopLoader color="#3b83f7" showSpinner={false} />
-          <div className="flex flex-row pb-[89px]">
+          <div className="flex flex-row">
             <Content>
               {children}
             </Content>

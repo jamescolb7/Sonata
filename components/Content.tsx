@@ -33,7 +33,7 @@ export default function Content({
 						<Button onClick={() => { setSidebarOpen(!sidebarOpen) }} className="visible md:invisible md:fixed" variant="outline"><Menu className="h-5 w-5"></Menu></Button>
 					</div>
 				</header>
-				<div className=" p-8">
+				<div className="p-8 mb-[89px]">
 					{searchQuery && <Search query={searchQuery}></Search>}
 					{!searchQuery && children}
 				</div>
