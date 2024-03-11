@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 'use client';
 
 import { Track } from '@/types/Track';
@@ -30,7 +31,7 @@ const columnHelper = createColumnHelper<Track>();
 const columns = [
 	columnHelper.accessor('album.cover_small', {
 		header: "Song",
-		cell: props => <img loading="lazy" className="h-12 w-12 flex-none rounded-md" src={props.getValue()} />
+		cell: props => <img loading="lazy" alt="" className="h-12 min-w-12 flex-none rounded-md" src={props.getValue()} />
 	}),
 	columnHelper.accessor('title', {
 		header: "",

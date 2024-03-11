@@ -53,7 +53,7 @@ export default function Sidebar({
 			<aside className={cn('bg-background h-screen pb-12 border-r', className)}>
 				<div className="space-y-4 py-4">
 					<div className="px-3 py-2">
-						<h2 className="mb-2 px-4 text-2xl font-semibold tracking-tight">
+						<h2 className="mb-2 px-4 text-2xl font-semibold tracking-tight fixed invisible md:visible md:static">
 							Sonata
 						</h2>
 						<ScrollArea className="h-[300px] px-1">

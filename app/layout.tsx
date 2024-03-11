@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { cn } from '@/lib/utils';
-import Sidebar from '@/components/Sidebar';
 import NextTopLoader from 'nextjs-toploader';
 import { Toaster } from "@/components/ui/sonner"
 import Content from "@/components/Content";
@@ -28,7 +27,6 @@ export default function RootLayout({
         <Provider>
           <NextTopLoader color="#3b83f7" showSpinner={false} />
           <div className="flex flex-row pb-[89px]">
-            <Sidebar className="z-[11] w-80 top-0 invisible fixed md:visible md:sticky" />
             <Content>
               {children}
             </Content>
