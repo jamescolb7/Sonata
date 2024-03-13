@@ -1,4 +1,3 @@
-/* eslint-disable @next/next/no-img-element */
 'use client';
 
 import { Track } from '@/types/Track';
@@ -20,6 +19,7 @@ import {
 	TableRow,
 } from "@/components/ui/table"
 import { formatTime } from "@/lib/utils"
+import Image from 'next/image';
 
 interface DataTableProps<TData, TValue> {
 	columns: ColumnDef<TData, TValue>[]
@@ -31,7 +31,7 @@ const columnHelper = createColumnHelper<Track>();
 const columns = [
 	columnHelper.accessor('album.cover_small', {
 		header: "Song",
-		cell: props => <img loading="lazy" alt="" className="h-12 min-w-12 flex-none rounded-md" src={props.getValue()} />
+		cell: props => <Image width={56} quality={100} height={56} loading="lazy" alt="" className="h-12 min-w-12 flex-none rounded-md" src={props.getValue()} />
 	}),
 	columnHelper.accessor('title', {
 		header: "",

@@ -1,12 +1,12 @@
-/* eslint-disable @next/next/no-img-element */
 import Link from "next/link";
 import { ScrollArea, ScrollBar } from "./ui/scroll-area";
 import { cn } from "@/lib/utils";
+import Image from "next/image";
 
 interface CardProps extends React.HTMLAttributes<HTMLElement> {
 	title: string,
 	subtitle?: string,
-	image?: string,
+	image: string,
 	aspectRatio?: "portrait" | "square",
 	width?: number,
 	height?: number
@@ -25,7 +25,7 @@ export function Card({
 	return (
 		<div className={cn("space-y-3", className)}>
 			<div className="overflow-hidden rounded-md">
-				<img
+				<Image
 					src={image}
 					alt={title}
 					width={width}
@@ -34,8 +34,7 @@ export function Card({
 						`h-[${height}px] w-[${width}px] object-cover transition-all hover:scale-105`,
 						aspectRatio === "portrait" ? "aspect-[3/4]" : "aspect-square"
 					)}
-				>
-				</img>
+				/>
 			</div>
 			<div className="space-y-1 text-sm overflow-hidden">
 				<h3 className="font-medium leading-none">{title}</h3>
