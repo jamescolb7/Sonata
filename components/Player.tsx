@@ -41,7 +41,7 @@ export default function Player({
 	}
 
 	const skip = () => {
-		if (!queueIndex || !queue) return;
+		if (queueIndex === null || !queue) return;
 		if (queueIndex >= queue.length - 1) return;
 		setPlayer(queue[queueIndex + 1]);
 		setQueueIndex(queueIndex + 1);
