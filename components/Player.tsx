@@ -18,10 +18,15 @@ function formatTime(time: number | undefined) {
 	return `${pad(minutes)}:${pad(seconds)}`;
 }
 
+interface PlayerProps extends React.HTMLAttributes<HTMLElement> {
+	playerUrl: string | null
+}
+
 export default function Player({
 	className,
+	playerUrl,
 	...props
-}: React.HTMLAttributes<HTMLElement>) {
+}: PlayerProps) {
 	const [player, setPlayer] = useAtom(PlayerAtom);
 	const [queue, setQueue] = useAtom(QueueAtom);
 	const [queueIndex, setQueueIndex] = useAtom(QueueIndexAtom);
@@ -155,7 +160,7 @@ export default function Player({
 					</div>
 				</div>
 			</div>
-			<audio ref={playerRef} onEnded={skip} src={`${process.env.NEXT_PUBLIC_PLAYER_URL || ""}/${player.id}.mp3`} autoPlay></audio>
+			<audio ref={playerRef} onEnded={skip} src={`${playerUrl ? `${playerUrl}/${player.id}.mp3` : player?.preview}`} autoPlay></audio>
 		</>
 	)
 }

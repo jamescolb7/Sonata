@@ -7,5 +7,6 @@ export interface Track {
 	album: Album,
 	contributors: Artist[],
 	artist: Artist,
-	duration: number
+	duration: number,
+	preview: string
 }
