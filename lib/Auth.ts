@@ -2,9 +2,6 @@ import { Lucia, Session, User } from "lucia";
 import { PrismaClient } from "@prisma/client";
 import { PrismaAdapter } from "@lucia-auth/adapter-prisma";
 
-import { webcrypto } from "crypto";
-globalThis.crypto = webcrypto as Crypto;
-
 const client = new PrismaClient();
 
 const adapter = new PrismaAdapter(client.session, client.user);
@@ -30,5 +27,10 @@ interface ValidatedRequest {
 declare module "lucia" {
 	interface Register {
 		Lucia: typeof lucia
+		DatabaseUserAttributes: DatabaseUserAttributes
 	}
+}
+
+interface DatabaseUserAttributes {
+	email: string
 }

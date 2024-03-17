@@ -1,18 +1,15 @@
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
-import { cn } from '@/lib/utils';
 import { lucia } from '@/lib/Auth';
 import { redirect } from 'next/navigation';
 import { PrismaClient } from "@prisma/client";
 import bcrypt from 'bcrypt';
 import { generateId } from 'lucia';
 import { cookies } from "next/headers";
-import Form, { ActionResult } from '@/components/Form';
+import Form from '@/components/Form';
 
-interface UserAuthFormProps extends React.HTMLAttributes<HTMLDivElement> { }
-
-export default function Auth({ className, ...props }: UserAuthFormProps) {
+export default function Auth() {
 	return (
 		<div className="container relative flex-col items-center justify-center md:grid w-full">
 			<div className="lg:p-8">
@@ -25,7 +22,7 @@ export default function Auth({ className, ...props }: UserAuthFormProps) {
 							Accessing this page requires authentication. Please enter your email below to login to your existing account, or to create one.
 						</p>
 					</div>
-					<div className={cn("grid gap-6", className)} {...props}>
+					<div className="grid gap-6">
 						<Form action={login}>
 							<div className="grid gap-2">
 								<div className="grid gap-1">
