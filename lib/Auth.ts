@@ -1,4 +1,4 @@
-import { Lucia, Session, User } from "lucia";
+import { Lucia } from "lucia";
 import { PrismaClient } from "@prisma/client";
 import { PrismaAdapter } from "@lucia-auth/adapter-prisma";
 
@@ -14,15 +14,11 @@ export const lucia = new Lucia(adapter, {
 	},
 	getUserAttributes: (attributes) => {
 		return {
-			email: attributes.email
+			email: attributes.email,
+			createdAt: attributes.createdAt
 		};
 	}
 });
-
-interface ValidatedRequest {
-	user: User | null,
-	session: Session | null
-}
 
 declare module "lucia" {
 	interface Register {
@@ -33,4 +29,5 @@ declare module "lucia" {
 
 interface DatabaseUserAttributes {
 	email: string
+	createdAt: Date
 }

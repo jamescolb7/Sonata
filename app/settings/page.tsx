@@ -20,8 +20,8 @@ const settings: SettingsType[] = [
 	{
 		name: "Profile",
 		description: "Change your profile information.",
-		route: "profile",
-		icon: UserCircle
+		route: "/user",
+		icon: UserCircle,
 	},
 	{
 		name: "Quality",
@@ -40,7 +40,7 @@ export default function Settings() {
 					let Icon = setting.icon;
 
 					return (
-						<Link key={index} href={`/settings/${setting.route}`}>
+						<Link key={index} href={setting.route.startsWith('/') ? setting.route : `/settings/${setting.route}`}>
 							<Card>
 								<CardHeader>
 									<Icon className='h-8 w-8'></Icon>
