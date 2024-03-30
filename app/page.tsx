@@ -1,9 +1,10 @@
-import { CardCollection } from "@/components/Cards";
+import { Card, CardCollection } from "@/components/Cards";
 import List from "@/components/List";
 import { Track } from '@/types/Track';
 import { Title, Muted } from "@/components/Text";
 import { Separator } from "@/components/ui/separator";
 import Fetch from "@/lib/Fetch";
+import Link from "next/link";
 
 interface Rows {
   title: string
@@ -59,7 +60,15 @@ export default async function Home() {
               <Title>{row.title}</Title>
               <Muted className="-mt-4 mb-4">{row.subtitle}</Muted>
               <Separator className="my-4"></Separator>
-              {row.data && <CardCollection data={row.data}></CardCollection>}
+              {row.data && <CardCollection>
+                {row.data.map((item, index) => {
+                  return (
+                    <Link href={`/artist/${item?.id}`} key={index}>
+                      <Card title={item?.name || item?.title} image={item?.picture_xl || item?.cover_xl} subtitle={item?.subtitle} width={220} height={220}></Card>
+                    </Link>
+                  )
+                })}
+              </CardCollection>}
             </div>
           )
         })}
