@@ -6,7 +6,10 @@ import { Separator } from "@/components/ui/separator";
 import { client } from "@/lib/db";
 import Link from "next/link";
 
-export async function validateRequest() {
+export const dynamic = 'force-dynamic'
+export const revalidate = 0;
+
+async function validateRequest() {
 	let sessionId = cookies().get(lucia.sessionCookieName)?.value
 	if (!sessionId) return { user: null, session: null };
 	const user = await lucia.validateSession(sessionId);
