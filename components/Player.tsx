@@ -151,7 +151,7 @@ export default function Player({
 					<div className={`bg-white rounded-sm h-full`} style={{ width: `${progress}%` }}></div>
 				</div>
 				<div className="flex flex-row flex-nowrap justify-between w-full py-3 px-4">
-					<div className="flex items-center space-x-3">
+					<div className="flex items-center space-x-3 overflow-hidden">
 						<img className="h-14 w-14 rounded-md border indent-[-10000px]" src={player?.album ? player?.album?.cover_small : ""} alt="" />
 						<div className="overflow-hidden">
 							<Link href={`/album/${player?.album?.id}`}>
