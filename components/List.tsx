@@ -2,6 +2,7 @@
 'use client';
 
 import { Track } from '@/types/Track';
+import { Track as PrismaTrack } from '@prisma/client';
 import { PlayerAtom, QueueAtom, QueueIndexAtom } from '@/lib/PlayerState';
 import { useAtom } from 'jotai';
 import {
@@ -125,7 +126,7 @@ export function DataTable<TData, TValue>({
 }
 
 interface Props extends React.HTMLAttributes<HTMLElement> {
-	data: Track[]
+	data: Track[] | PrismaTrack[]
 }
 
 export default function List({
