@@ -1,4 +1,4 @@
-import { Card, CardCollection } from "@/components/Cards";
+import { CardCollection, ScrollCard } from "@/components/Cards";
 import { Muted, Title } from "@/components/Text";
 import { cookies } from "next/headers";
 import { lucia } from '@/lib/Auth'
@@ -22,7 +22,7 @@ export default async function Library() {
 	if (user.user === null) return;
 
 	let data = await client.liked.findMany({
-		take: 5,
+		take: 6,
 		orderBy: [
 			{
 				createdAt: 'desc'
@@ -50,12 +50,12 @@ export default async function Library() {
 					<Separator className="my-4" />
 					<CardCollection>
 						<Link href={`/library/liked`}>
-							<Card title="View All" image="/arrow.png" subtitle="Show your liked songs" width={220} height={220}></Card>
+							<ScrollCard title="View All" image="/arrow.png" subtitle="Show your liked songs" width={220} height={220}></ScrollCard>
 						</Link>
 						{data.map((item, index) => {
 							return (
 								<Link href={`/track/${item.track.id}`} key={index}>
-									<Card title={item.track.title} image={item.track.album?.cover_medium} subtitle={"Track"} width={220} height={220}></Card>
+									<ScrollCard title={item.track.title} image={item.track.album?.cover_medium} subtitle={"Track"} width={220} height={220}></ScrollCard>
 								</Link>
 							)
 						})}
@@ -67,7 +67,7 @@ export default async function Library() {
 					<Separator className="my-4" />
 					<CardCollection>
 						<Link href={`/library/playlists`}>
-							<Card title="View All" image="/arrow.png" subtitle="Show your playlists" width={220} height={220}></Card>
+							<ScrollCard title="View All" image="/arrow.png" subtitle="Show your playlists" width={220} height={220}></ScrollCard>
 						</Link>
 					</CardCollection>
 				</div>

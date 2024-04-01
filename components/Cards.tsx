@@ -45,6 +45,16 @@ export function Card({
 	)
 }
 
+export function ScrollCard({
+	className,
+	children,
+	...props
+}: CardProps) {
+	return (
+		<Card className={cn("min-w-[180px] md:min-w-[100px] lg:min-w-0", className)} {...props}>{children}</Card>
+	)
+}
+
 export function CardCollection({
 	className,
 	children,

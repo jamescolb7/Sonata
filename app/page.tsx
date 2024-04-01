@@ -1,4 +1,4 @@
-import { Card, CardCollection } from "@/components/Cards";
+import { CardCollection, ScrollCard } from "@/components/Cards";
 import List from "@/components/List";
 import { Track } from '@/types/Track';
 import { Title, Muted } from "@/components/Text";
@@ -64,7 +64,7 @@ export default async function Home() {
                 {row.data.map((item, index) => {
                   return (
                     <Link href={`/artist/${item?.id}`} key={index}>
-                      <Card title={item?.name || item?.title} image={item?.picture_xl || item?.cover_xl} subtitle={item?.subtitle} width={220} height={220}></Card>
+                      <ScrollCard title={item?.name || item?.title} image={item?.picture_xl || item?.cover_xl} subtitle={item?.subtitle} width={220} height={220}></ScrollCard>
                     </Link>
                   )
                 })}
