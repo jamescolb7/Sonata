@@ -1,5 +1,4 @@
-/* eslint-disable @next/next/no-img-element */
-import Link from "next/link";
+import Image from "./Image";
 import { ScrollArea, ScrollBar } from "./ui/scroll-area";
 import { cn } from "@/lib/utils";
 
@@ -25,9 +24,10 @@ export function Card({
 	return (
 		<div {...props} className={cn(`space-y-3`, className)} style={{ maxWidth: `${width}px` }}>
 			<div className="overflow-hidden rounded-md">
-				<img
+				<Image
 					src={image}
 					alt={title}
+					loading="lazy"
 					width={width}
 					height={height}
 					className={cn(
@@ -35,7 +35,7 @@ export function Card({
 						aspectRatio === "portrait" ? "aspect-[3/4]" : "aspect-square"
 					)}
 				>
-				</img>
+				</Image>
 			</div>
 			<div className="space-y-1 text-sm overflow-hidden">
 				<h3 className="font-medium leading-none">{title}</h3>

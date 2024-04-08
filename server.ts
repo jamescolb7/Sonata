@@ -3,6 +3,7 @@ import next from "next";
 import morgan from 'morgan';
 import router from './server/router';
 import { CSRF, Auth } from "./server/auth";
+import Image from "./server/image";
 
 const port = parseInt(process.env.PORT as string, 10) || 3000;
 const dev = process.env.NODE_ENV !== 'production';
@@ -16,6 +17,7 @@ app.prepare().then(() => {
 	const server = express();
 
 	if (!dev) server.use(morgan('tiny'));
+	server.use('/image', Image);
 	server.use(CSRF);
 	server.use(Auth);
 	server.use('/api', router);

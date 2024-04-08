@@ -1,4 +1,3 @@
-/* eslint-disable @next/next/no-img-element */
 'use client';
 
 import { useAtom } from "jotai";
@@ -9,6 +8,7 @@ import { PlayerAtom, QueueAtom, QueueIndexAtom } from "@/lib/PlayerState";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./ui/tooltip";
+import Image from "./Image";
 
 const pad = (num: number) => num.toString().padStart(2, "0");
 
@@ -152,7 +152,7 @@ export default function Player({
 				</div>
 				<div className="flex flex-row flex-nowrap justify-between w-full py-3 px-4">
 					<div className="flex items-center space-x-3 overflow-hidden">
-						<img className="h-14 w-14 rounded-md border indent-[-10000px]" src={player?.album ? player?.album?.cover_small : ""} alt="" />
+						<Image className="h-14 w-14 rounded-md border indent-[-10000px]" src={player?.album ? player?.album?.cover_small : ""} alt="" />
 						<div className="overflow-hidden">
 							<Link href={`/album/${player?.album?.id}`}>
 								<h3 className="text-lg font-semibold text-nowrap">
