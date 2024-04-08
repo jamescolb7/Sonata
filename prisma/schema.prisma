@@ -18,6 +18,7 @@ model User {
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
   Liked           Liked[]
+  History         History[]
 }
 
 model Session {
@@ -52,18 +53,19 @@ model Album {
 }
 
 model Track {
-  id        String   @id @unique
+  id        String    @id @unique
   title     String
-  artist    Artist?  @relation("TrackArtist", references: [id], fields: [artistId])
+  artist    Artist?   @relation("TrackArtist", references: [id], fields: [artistId])
   artistId  String?
-  album     Album?   @relation(references: [id], fields: [albumId])
+  album     Album?    @relation(references: [id], fields: [albumId])
   albumId   String?
   duration  Int
   preview   String?
   type      String
   Liked     Liked[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  History   History[]
 }
 
 model Liked {
@@ -71,7 +73,17 @@ model Liked {
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId    String
   track     Track    @relation(fields: [trackId], references: [id])
-  trackId   String   @unique
+  trackId   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model History {
+  id        Int      @id @unique @default(autoincrement())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+  track     Track    @relation(fields: [trackId], references: [id])
+  trackId   String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }

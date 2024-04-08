@@ -54,10 +54,30 @@ router.get('/liked/:id', async (req: Request, res: Response) => {
 				trackId: req.params.id
 			}
 		})
-		return res.status(200).send({ liked: true });
+		res.status(200).send({ liked: true });
 	} catch (e) {
-		return res.status(404).send({ liked: false });
+		res.status(404).send({ liked: false });
 	}
+
+	//Also add the track to the user's history, if they are checking if it is liked
+
+	try {
+		let track = await GetTrack(req.params.id).catch(() => { return res.sendStatus(500) });
+		await client.history.create({
+			data: {
+				track: {
+					connect: {
+						id: String(track.id)
+					}
+				},
+				user: {
+					connect: {
+						id: res.locals.user.id
+					}
+				}
+			}
+		})
+	} catch (e) { }
 })
 
 export default router;
