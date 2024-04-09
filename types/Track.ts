@@ -2,10 +2,10 @@ import { Album } from "./Album"
 import { Artist } from "./Artist"
 
 export interface Track {
-	id: number,
+	id: string,
 	title: string,
 	album: Album,
-	contributors: Artist[],
+	contributors?: Artist[],
 	artist: Artist,
 	duration: number,
 	preview: string

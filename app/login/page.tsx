@@ -8,6 +8,9 @@ import bcrypt from 'bcrypt';
 import { generateId } from 'lucia';
 import { cookies } from "next/headers";
 import Form from '@/components/Form';
+import { Muted } from '@/components/Text';
+
+const signupAllowed = process.env.SIGNUPS_ALLOWED as string ?? true;
 
 export default function Auth() {
 	return (
@@ -56,6 +59,7 @@ export default function Auth() {
 								</Button>
 							</div>
 						</Form>
+						{signupAllowed === "false" && <Muted>Signups have been disabled on this instance.</Muted>}
 					</div>
 				</div>
 			</div>
@@ -94,6 +98,9 @@ async function login(_: any, formData: FormData): Promise<any> {
 	})
 
 	if (!existingUser) {
+		//Prevent signups if disabled by instance owner
+		if (signupAllowed === "false") return;
+
 		//Create a user where one does not exist
 		await client.user.create({
 			data: {

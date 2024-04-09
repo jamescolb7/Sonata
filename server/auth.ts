@@ -6,7 +6,7 @@ export function CSRF(req: Request, res: Response, next: NextFunction) {
 	if (req.method === "GET") return next();
 	const origin = req.headers.origin ?? null;
 	const host = req.headers.host ?? null;
-	if (!origin || !host || verifyRequestOrigin(origin, [host])) return res.sendStatus(403);
+	if (!origin || !host || !verifyRequestOrigin(origin, [host])) return res.sendStatus(403);
 	return next();
 }
 

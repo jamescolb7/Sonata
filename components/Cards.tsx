@@ -1,5 +1,4 @@
-/* eslint-disable @next/next/no-img-element */
-import Link from "next/link";
+import Image from "./Image";
 import { ScrollArea, ScrollBar } from "./ui/scroll-area";
 import { cn } from "@/lib/utils";
 
@@ -23,19 +22,20 @@ export function Card({
 	...props
 }: CardProps) {
 	return (
-		<div className={cn("space-y-3", className)}>
+		<div {...props} className={cn(`space-y-3`, className)} style={{ maxWidth: `${width}px` }}>
 			<div className="overflow-hidden rounded-md">
-				<img
+				<Image
 					src={image}
 					alt={title}
+					loading="lazy"
 					width={width}
 					height={height}
 					className={cn(
-						`h-[${height}px] w-[${width}px] object-cover transition-all hover:scale-105`,
+						`object-cover transition-all hover:scale-105`,
 						aspectRatio === "portrait" ? "aspect-[3/4]" : "aspect-square"
 					)}
 				>
-				</img>
+				</Image>
 			</div>
 			<div className="space-y-1 text-sm overflow-hidden">
 				<h3 className="font-medium leading-none">{title}</h3>
@@ -45,26 +45,26 @@ export function Card({
 	)
 }
 
-interface CollectionProps extends React.HTMLAttributes<HTMLElement> {
-	data: any[]
+export function ScrollCard({
+	className,
+	children,
+	...props
+}: CardProps) {
+	return (
+		<Card className={cn("min-w-[180px] md:min-w-[100px] lg:min-w-0", className)} {...props}>{children}</Card>
+	)
 }
 
 export function CardCollection({
-	data,
 	className,
+	children,
 	...props
-}: CollectionProps) {
+}: React.HTMLAttributes<HTMLElement>) {
 	return (
-		<div className="">
+		<div {...props} className={className}>
 			<ScrollArea className="overflow-hidden">
 				<div className="flex max-w-max space-x-4 p-4">
-					{data.map((item, index) => {
-						return (
-							<Link href={`/artist/${item?.id}`} key={index}>
-								<Card title={item?.name || item?.title} image={item?.picture_xl || item?.cover_xl} width={220} height={220}></Card>
-							</Link>
-						)
-					})}
+					{children}
 				</div>
 				<ScrollBar orientation="horizontal" />
 			</ScrollArea>

@@ -1,13 +1,14 @@
-/* eslint-disable @next/next/no-img-element */
 'use client';
 
 import { useAtom } from "jotai";
 import { cn } from "@/lib/utils";
 import { Slider } from "./ui/slider";
-import { Pause, Play, SkipBack, SkipForward, Volume, Volume1, Volume2 } from "lucide-react";
+import { Heart, HeartOffIcon, ListPlusIcon, Pause, Play, SkipBack, SkipForward, Volume, Volume1, Volume2 } from "lucide-react";
 import { PlayerAtom, QueueAtom, QueueIndexAtom } from "@/lib/PlayerState";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./ui/tooltip";
+import Image from "./Image";
 
 const pad = (num: number) => num.toString().padStart(2, "0");
 
@@ -36,6 +37,7 @@ export default function Player({
 	const [duration, setDuration] = useState<string | undefined>("00:00");
 	const [volume, setVolume] = useState<number>(100);
 	const [progress, setProgress] = useState<number>(0);
+	const [liked, setLiked] = useState<boolean>(false);
 
 	const playerRef = useRef<HTMLAudioElement>(null);
 
@@ -59,6 +61,12 @@ export default function Player({
 		setQueueIndex(queueIndex - 1);
 	}
 
+	const like = async () => {
+		if (!player.id) return;
+		await fetch(`/api/me/like/${player.id}`);
+		setLiked(!liked);
+	}
+
 	useEffect(() => {
 		let playerElem: HTMLAudioElement | null = null;
 
@@ -79,6 +87,16 @@ export default function Player({
 		playerElem?.addEventListener('timeupdate', handleTime);
 		playerElem?.addEventListener('play', () => setPaused(false));
 		playerElem?.addEventListener('pause', () => setPaused(true));
+
+		fetch(`/api/me/liked/${player.id}`).then(res => res.json()).then((data: { liked: boolean }) => {
+			if (data.liked) {
+				setLiked(true);
+			} else {
+				setLiked(false);
+			}
+		}).catch(() => {
+			setLiked(false);
+		})
 
 		if (player?.album?.cover_medium) {
 			navigator.mediaSession.metadata = new MediaMetadata({
@@ -133,11 +151,11 @@ export default function Player({
 					<div className={`bg-white rounded-sm h-full`} style={{ width: `${progress}%` }}></div>
 				</div>
 				<div className="flex flex-row flex-nowrap justify-between w-full py-3 px-4">
-					<div className="flex items-center space-x-3">
-						<img className="h-14 w-14 rounded-md border indent-[-10000px]" src={player?.album ? player?.album?.cover_small : ""} alt="" />
-						<div>
+					<div className="flex items-center space-x-3 overflow-hidden">
+						<Image className="h-14 w-14 rounded-md border indent-[-10000px]" src={player?.album ? player?.album?.cover_small : ""} alt="" />
+						<div className="overflow-hidden">
 							<Link href={`/album/${player?.album?.id}`}>
-								<h3 className="text-lg font-semibold">
+								<h3 className="text-lg font-semibold text-nowrap">
 									{player.title}
 								</h3>
 							</Link>
@@ -147,9 +165,29 @@ export default function Player({
 								</p>
 							</Link>
 						</div>
+						<TooltipProvider>
+							<Tooltip>
+								<TooltipTrigger>
+									{liked ? <Heart fill="#fff" onClick={like} className="h-6 w-6" /> : <HeartOffIcon onClick={like} className="h-6 w-6" />}
+								</TooltipTrigger>
+								<TooltipContent>
+									<p>Like Song</p>
+								</TooltipContent>
+							</Tooltip>
+						</TooltipProvider>
+						<TooltipProvider>
+							<Tooltip>
+								<TooltipTrigger>
+									<ListPlusIcon className="h-6 w-6" />
+								</TooltipTrigger>
+								<TooltipContent>
+									Add to Playlist
+								</TooltipContent>
+							</Tooltip>
+						</TooltipProvider>
 					</div>
 					<div className="flex items-center flex-row space-x-3 cursor-pointer">
-						<SkipBack onClick={back} className="h-8 w-8" />
+						<SkipBack onClick={back} className="h-8 w-8 fixed invisible md:static md:visible" />
 						{paused ? <Play onClick={togglePlay} className="h-8 w-8" /> : <Pause onClick={togglePlay} className="h-8 w-8" />}
 						<SkipForward onClick={skip} className="h-8 w-8" />
 					</div>

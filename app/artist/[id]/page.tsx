@@ -55,7 +55,7 @@ export default async function Track({ params }: Props) {
 		<>
 			<Header img={data.picture_big} title={data.name} type="Artist"></Header>
 			<List data={tracks}></List>
-			<div className="grid grid-cols-2 md:grid-cols-4 xl:grid-cols-5 space-x-4 space-y-4 p-4">
+			<div className="grid grid-cols-2 md:grid-cols-4 xl:grid-cols-5 gap-x-4 gap-y-4 p-4">
 				{albums.map((album, index) => {
 					return (
 						<Link key={index} href={`/album/${album.id}`}>

@@ -2,7 +2,7 @@ import { Artist } from "./Artist"
 import { Track } from "./Track"
 
 export interface Album {
-	id: number,
+	id: string,
 	title: string,
 	artist: Artist,
 	cover_big: string,
