@@ -22,6 +22,7 @@ import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Button } from "./ui/button";
 import { Track } from "@/types/Track";
+import { Muted } from "./Text";
 
 const pad = (num: number) => num.toString().padStart(2, "0");
 
@@ -75,7 +76,8 @@ function PlaylistModal({ open, set, player }: PlaylistModalProps) {
 				<DialogHeader>
 					<DialogTitle>Add to Playlist</DialogTitle>
 					<DialogDescription>
-						You are adding <b>{player.title}</b> to a playlist.
+						{data.length ? <>You are adding <b>{player.title}</b> to a playlist.</> : <>You do not currently have any playlists.</>}
+
 					</DialogDescription>
 					<div>
 						<RadioGroup onValueChange={(e) => { setSelected(e) }} defaultValue={`option_0`} className="gap-0 mt-2 mb-3">
@@ -91,7 +93,10 @@ function PlaylistModal({ open, set, player }: PlaylistModalProps) {
 					</div>
 					<DialogFooter>
 						<DialogClose asChild>
-							<Button type="button" onClick={save} variant="default">
+							<Button type="button" onClick={() => {
+								if (data.length) return save();
+								set(false)
+							}} variant="default">
 								Save
 							</Button>
 						</DialogClose>
@@ -262,7 +267,9 @@ export default function Player({
 						<TooltipProvider>
 							<Tooltip>
 								<TooltipTrigger>
-									<ListPlusIcon onClick={() => { setPlaylistDialogOpen(!playlistDialogOpen) }} className="h-6 w-6" />
+									<ListPlusIcon onClick={() => {
+										if (player.id) setPlaylistDialogOpen(!playlistDialogOpen);
+									}} className="h-6 w-6" />
 								</TooltipTrigger>
 								<TooltipContent>
 									Add to Playlist
