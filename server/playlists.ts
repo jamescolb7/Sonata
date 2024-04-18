@@ -11,11 +11,13 @@ router.use((req, res, next) => {
 
 router.get('/list', async (req: Request, res: Response) => {
 	const data = await client.playlists.findMany({
+		orderBy: [
+			{
+				createdAt: "desc"
+			}
+		],
 		where: {
-			userId: res.locals.user.userId
-		},
-		orderBy: {
-			createdAt: "desc"
+			userId: res.locals.user.id
 		}
 	})
 	return res.send(data);
