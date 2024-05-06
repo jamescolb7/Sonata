@@ -93,6 +93,7 @@ export default async function Library() {
 					<Muted className="-mt-4 mb-4">Your most recently played songs.</Muted>
 					<Separator className="my-4" />
 					<CardCollection>
+						{!history.length && <Muted className="text-center">Play some songs and they will appear here.</Muted>}
 						{history.map((item, index) => {
 							return (
 								<Link href={`/track/${item.track.id}`} key={index}>
@@ -107,9 +108,10 @@ export default async function Library() {
 					<Muted className="-mt-4 mb-4">Your currently liked songs.</Muted>
 					<Separator className="my-4" />
 					<CardCollection>
-						<Link href={`/library/liked`}>
+						{!history.length && <Muted className="text-center">Like some songs and they will appear here.</Muted>}
+						{history.length !== 0 && <Link href={`/library/liked`}>
 							<ScrollCard title="View All" image="/arrow.png" subtitle="Show your liked songs" width={220} height={220}></ScrollCard>
-						</Link>
+						</Link>}
 						{liked.map((item, index) => {
 							return (
 								<Link href={`/track/${item.track.id}`} key={index}>

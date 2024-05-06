@@ -1,6 +1,6 @@
 'use client';
 
-import { useAtom } from "jotai";
+import { useAtom, useAtomValue } from "jotai";
 import { cn } from "@/lib/utils";
 import { Slider } from "./ui/slider";
 import { Heart, HeartOffIcon, ListPlusIcon, Pause, Play, SkipBack, SkipForward, Volume, Volume1, Volume2 } from "lucide-react";
@@ -107,17 +107,12 @@ function PlaylistModal({ open, set, player }: PlaylistModalProps) {
 	)
 }
 
-interface PlayerProps extends React.HTMLAttributes<HTMLElement> {
-	playerUrl: string | null
-}
-
 export default function Player({
 	className,
-	playerUrl,
 	...props
-}: PlayerProps) {
+}: React.HTMLAttributes<HTMLElement>) {
 	const [player, setPlayer] = useAtom(PlayerAtom);
-	const [queue, setQueue] = useAtom(QueueAtom);
+	const queue = useAtomValue(QueueAtom);
 	const [queueIndex, setQueueIndex] = useAtom(QueueIndexAtom);
 
 	const [paused, setPaused] = useState<boolean>(true);
@@ -127,6 +122,7 @@ export default function Player({
 	const [progress, setProgress] = useState<number>(0);
 	const [liked, setLiked] = useState<boolean>(false);
 	const [playlistDialogOpen, setPlaylistDialogOpen] = useState<boolean>(false);
+	const [playerUrl, setPlayerUrl] = useState<string>("");
 
 	const playerRef = useRef<HTMLAudioElement>(null);
 
@@ -187,6 +183,16 @@ export default function Player({
 			setLiked(false);
 		})
 
+		//Fetch streaming key
+		if (player.id) {
+			fetch(`/api/stream/deezer/${player.id}`).then(res => res.json()).then((data: { id: string }) => {
+				setPlayerUrl(`/api/stream/${data.id}.mp3`);
+			}).catch(() => {
+				if (!player.preview) return;
+				setPlayerUrl(player.preview);
+			})
+		}
+
 		if (player?.album?.cover_medium) {
 			navigator.mediaSession.metadata = new MediaMetadata({
 				title: player?.title,
@@ -194,7 +200,7 @@ export default function Player({
 				album: player?.album?.title,
 				artwork: [
 					{
-						src: player?.album?.cover_medium,
+						src: '/image?q=' + player?.album?.cover_medium,
 						sizes: '250x250'
 					}
 				]
@@ -290,7 +296,7 @@ export default function Player({
 				</div>
 			</div>
 			<PlaylistModal player={player} open={playlistDialogOpen} set={setPlaylistDialogOpen} />
-			<audio ref={playerRef} onEnded={skip} src={`${playerUrl ? `${playerUrl}/${player.id}.mp3` : player?.preview}`} autoPlay></audio>
+			<audio ref={playerRef} onEnded={skip} src={playerUrl ?? ""} autoPlay></audio>
 		</>
 	)
 }

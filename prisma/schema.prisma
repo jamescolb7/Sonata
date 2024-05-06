@@ -11,15 +11,16 @@ datasource db {
 }
 
 model User {
-  id              String      @id
-  email           String      @unique()
+  id              String           @id
+  email           String           @unique()
   hashed_password String
   sessions        Session[]
-  createdAt       DateTime    @default(now())
-  updatedAt       DateTime    @updatedAt
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
   Liked           Liked[]
   History         History[]
   Playlists       Playlists[]
+  StreamSessions  StreamSessions[]
 }
 
 model Session {
@@ -68,6 +69,7 @@ model Track {
   updatedAt      DateTime         @updatedAt
   History        History[]
   PlaylistTracks PlaylistTracks[]
+  StreamSessions StreamSessions[]
 }
 
 model Liked {
@@ -108,4 +110,16 @@ model PlaylistTracks {
   trackId    String
   createdAt  DateTime  @default(now())
   updatedAt  DateTime  @updatedAt
+}
+
+model StreamSessions {
+  id        String   @id @unique @default(uuid())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  track     Track    @relation(fields: [trackId], references: [id])
+  trackId   String
+  path      String
+  createdAt DateTime @default(now())
+  expiresAt DateTime
+  updatedAt DateTime @updatedAt
 }
