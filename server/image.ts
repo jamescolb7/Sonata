@@ -9,6 +9,7 @@ router.get('/', async (req, res) => {
 		const url = new URL(req.query.q as string);
 		if (url.host !== "e-cdns-images.dzcdn.net" && url.host !== "cdn-images.dzcdn.net") return res.sendStatus(403);
 		const data = await fetch(url.toString());
+		res.setHeader('Cache-Control', "public, max-age=604800, immutable");
 		if (data.body !== null) {
 			Readable.fromWeb(data.body as ReadableStream<Uint8Array>).pipe(res);
 		}

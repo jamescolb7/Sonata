@@ -28,7 +28,7 @@ router.get('/:plugin/:id', async (req: Request, res: Response) => {
     }
 
     let success = true;
-    const filePath = `${path}/${req.params.plugin}/${req.params.id}`;
+    const filePath = `${path}/${req.params.plugin}/${req.params.id}.mp3`;
 
     if (!fs.existsSync(filePath)) {
         switch (req.params.plugin) {
@@ -97,7 +97,6 @@ router.get('/:key.mp3', async (req: Request, res: Response) => {
         }
 
         if (fs.existsSync(data.path)) {
-            res.setHeader('content-type', 'audio/mp3');
             return res.sendFile(data.path);
         } else {
             deleteToken(req.params.key);

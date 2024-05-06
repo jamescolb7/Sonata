@@ -22,7 +22,6 @@ import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Button } from "./ui/button";
 import { Track } from "@/types/Track";
-import { Muted } from "./Text";
 
 const pad = (num: number) => num.toString().padStart(2, "0");
 
@@ -152,6 +151,15 @@ export default function Player({
 		setLiked(!liked);
 	}
 
+	const seek = async (e: any): Promise<void> => {
+		if (!player.id) return;
+		let time = playerRef.current?.duration;
+		if (!time) return;
+		if (playerRef.current === null) return;
+		if (e.pageX === null || e.currentTarget === null) return;
+		playerRef.current.currentTime = time * (e.pageX / e.currentTarget.offsetWidth);
+	}
+
 	useEffect(() => {
 		let playerElem: HTMLAudioElement | null = null;
 
@@ -242,7 +250,7 @@ export default function Player({
 	return (
 		<>
 			<div {...props} className={cn(className, "fixed w-full bottom-0 border-t bg-background align-center ")}>
-				<div className='w-full h-[5px]'>
+				<div className='w-full h-[6px]' onClick={seek}>
 					<div className={`bg-primary rounded-sm h-full`} style={{ width: `${progress}%` }}></div>
 				</div>
 				<div className="flex flex-row flex-nowrap justify-between w-full py-3 px-4">

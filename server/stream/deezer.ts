@@ -18,7 +18,7 @@ export default async function DeezerDownload(id: string) {
     const buffer = Buffer.from(new Uint8Array(res));
     const data: Buffer = trackUrl.isEncrypted ? dfi.decryptDownload(buffer, track.SNG_ID) : buffer;
 
-    fs.writeFileSync(`${path}/${pluginName}/${id}`, data);
+    fs.writeFileSync(`${path}/${pluginName}/${id}.mp3`, data);
 }
 
 export async function init() {
