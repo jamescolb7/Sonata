@@ -181,24 +181,17 @@ export default function Player({
 		playerElem?.addEventListener('play', () => setPaused(false));
 		playerElem?.addEventListener('pause', () => setPaused(true));
 
-		fetch(`/api/me/liked/${player.id}`).then(res => res.json()).then((data: { liked: boolean }) => {
-			if (data.liked) {
-				setLiked(true);
-			} else {
-				setLiked(false);
-			}
-		}).catch(() => {
-			setLiked(false);
-		})
-
-		//Fetch streaming key
 		if (player.id) {
-			fetch(`/api/stream/deezer/${player.id}`).then(res => res.json()).then((data: { id: string }) => {
-				setPlayerUrl(`/api/stream/${data.id}.mp3`);
+			fetch(`/api/me/liked/${player.id}`).then(res => res.json()).then((data: { liked: boolean }) => {
+				if (data.liked) {
+					setLiked(true);
+				} else {
+					setLiked(false);
+				}
 			}).catch(() => {
-				if (!player.preview) return;
-				setPlayerUrl(player.preview);
+				setLiked(false);
 			})
+			setPlayerUrl(`/api/stream/deezer/${player.id}.mp3`);
 		}
 
 		if (player?.album?.cover_medium) {

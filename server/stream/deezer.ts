@@ -6,11 +6,11 @@ export const pluginName = "deezer";
 
 const arl = process.env.ARL as string ?? null;
 
-export default async function DeezerDownload(id: string) {
+export default async function DeezerDownload(id: string, quality: number) {
     if (!arl) throw new Error('No ARL');
 
     const track = await dfi.getTrackInfo(id);
-    const trackUrl = await dfi.getTrackDownloadUrl(track, 3);
+    const trackUrl = await dfi.getTrackDownloadUrl(track, quality);
 
     if (!trackUrl) throw new Error('Failed to fetch track URL');
 
@@ -18,7 +18,7 @@ export default async function DeezerDownload(id: string) {
     const buffer = Buffer.from(new Uint8Array(res));
     const data: Buffer = trackUrl.isEncrypted ? dfi.decryptDownload(buffer, track.SNG_ID) : buffer;
 
-    fs.writeFileSync(`${path}/${pluginName}/${id}.mp3`, data);
+    fs.writeFileSync(`${path}/${pluginName}/${id}_${quality}`, data);
 }
 
 export async function init() {
