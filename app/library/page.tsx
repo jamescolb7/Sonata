@@ -54,7 +54,7 @@ async function getPlaylists(user: { user: User, session: Session }) {
 
 async function getHistory(user: { user: User, session: Session }) {
 	return await client.history.findMany({
-		take: 10,
+		take: 7,
 		orderBy: [
 			{
 				createdAt: 'desc'
