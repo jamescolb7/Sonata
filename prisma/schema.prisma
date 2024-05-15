@@ -11,14 +11,15 @@ datasource db {
 }
 
 model User {
-  id              String    @id
-  email           String    @unique()
+  id              String           @id
+  email           String           @unique()
   hashed_password String
   sessions        Session[]
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
   Liked           Liked[]
   History         History[]
+  Playlists       Playlists[]
 }
 
 model Session {
@@ -53,19 +54,20 @@ model Album {
 }
 
 model Track {
-  id        String    @id @unique
-  title     String
-  artist    Artist?   @relation("TrackArtist", references: [id], fields: [artistId])
-  artistId  String?
-  album     Album?    @relation(references: [id], fields: [albumId])
-  albumId   String?
-  duration  Int
-  preview   String?
-  type      String
-  Liked     Liked[]
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  History   History[]
+  id             String           @id @unique
+  title          String
+  artist         Artist?          @relation("TrackArtist", references: [id], fields: [artistId])
+  artistId       String?
+  album          Album?           @relation(references: [id], fields: [albumId])
+  albumId        String?
+  duration       Int
+  preview        String?
+  type           String
+  Liked          Liked[]
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  History        History[]
+  PlaylistTracks PlaylistTracks[]
 }
 
 model Liked {
@@ -86,4 +88,24 @@ model History {
   trackId   String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model Playlists {
+  id             String           @id @unique @default(uuid())
+  name           String           @unique
+  user           User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId         String
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  PlaylistTracks PlaylistTracks[]
+}
+
+model PlaylistTracks {
+  id         Int       @id @unique @default(autoincrement())
+  playlist   Playlists @relation(fields: [playlistId], references: [id], onDelete: Cascade)
+  playlistId String
+  track      Track     @relation(fields: [trackId], references: [id])
+  trackId    String
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
 }

@@ -54,9 +54,9 @@ router.get('/liked/:id', async (req: Request, res: Response) => {
 				trackId: req.params.id
 			}
 		})
-		res.status(200).send({ liked: true });
+		res.send({ liked: true });
 	} catch (e) {
-		res.status(404).send({ liked: false });
+		res.send({ liked: false });
 	}
 
 	//Also add the track to the user's history, if they are checking if it is liked

@@ -64,7 +64,7 @@ export default async function Home() {
                 {row.data.map((item, index) => {
                   return (
                     <Link href={`/artist/${item?.id}`} key={index}>
-                      <ScrollCard title={item?.name || item?.title} image={item?.picture_xl || item?.cover_xl} subtitle={item?.subtitle} width={220} height={220}></ScrollCard>
+                      <ScrollCard title={item?.name || item?.title} image={item?.picture_medium || item?.cover_medium} subtitle={item?.subtitle} width={220} height={220}></ScrollCard>
                     </Link>
                   )
                 })}

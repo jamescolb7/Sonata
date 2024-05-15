@@ -1,6 +1,6 @@
 'use client';
 
-import { useAtom } from "jotai";
+import { useAtom, useAtomValue } from "jotai";
 import { cn } from "@/lib/utils";
 import { Slider } from "./ui/slider";
 import { Heart, HeartOffIcon, ListPlusIcon, Pause, Play, SkipBack, SkipForward, Volume, Volume1, Volume2 } from "lucide-react";
@@ -9,6 +9,19 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./ui/tooltip";
 import Image from "./Image";
+import {
+	Dialog,
+	DialogClose,
+	DialogContent,
+	DialogDescription,
+	DialogFooter,
+	DialogHeader,
+	DialogTitle
+} from "@/components/ui/dialog"
+import { Label } from "@/components/ui/label"
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
+import { Button } from "./ui/button";
+import { Track } from "@/types/Track";
 
 const pad = (num: number) => num.toString().padStart(2, "0");
 
@@ -19,17 +32,86 @@ function formatTime(time: number | undefined) {
 	return `${pad(minutes)}:${pad(seconds)}`;
 }
 
-interface PlayerProps extends React.HTMLAttributes<HTMLElement> {
-	playerUrl: string | null
+interface PlaylistModalProps extends React.HTMLAttributes<HTMLElement> {
+	open: boolean,
+	set: React.Dispatch<React.SetStateAction<boolean>>,
+	player: Partial<Track>
+}
+
+function PlaylistModal({ open, set, player }: PlaylistModalProps) {
+	const [data, setData] = useState<[] | { id: string, name: string }[]>([]);
+	const [selected, setSelected] = useState("option_0");
+
+	useEffect(() => {
+		const getData = async () => {
+			const res = await fetch(`/api/playlists/list`);
+			const json = await res.json();
+			setData(json);
+		}
+
+		getData();
+	}, [open])
+
+	const save = async () => {
+		if (selected === null) return;
+
+		let index = selected ? selected.split('_')[1] as unknown as number : 0;
+
+		setSelected("option_0");
+
+		if (isNaN(index)) return;
+
+		let playlist = data[index].id;
+
+		let res = await fetch(`/api/playlists/set/${playlist}/${player.id}`);
+		if (res.ok) {
+			set(false);
+		}
+	}
+
+	return (
+		<Dialog open={open} onOpenChange={() => { set(!open) }}>
+			<DialogContent>
+				<DialogHeader>
+					<DialogTitle>Add to Playlist</DialogTitle>
+					<DialogDescription>
+						{data.length ? <>You are adding <b>{player.title}</b> to a playlist.</> : <>You do not currently have any playlists.</>}
+
+					</DialogDescription>
+					<div>
+						<RadioGroup onValueChange={(e) => { setSelected(e) }} defaultValue={`option_0`} className="gap-0 mt-2 mb-3">
+							{data.map((playlist, i) => {
+								return (
+									<div key={i} className={`flex items-center space-x-2 p-4 hover:bg-secondary transition-colors ${i === 0 ? "border rounded-t-lg" : i + 1 === data.length ? "border rounded-b-lg border-t-0" : "border-x border-b"}`}>
+										<RadioGroupItem value={`option_${i}`} id={`option_${i}`} />
+										<Label htmlFor={`option_${i}`}>{playlist.name}</Label>
+									</div>
+								)
+							})}
+						</RadioGroup>
+					</div>
+					<DialogFooter>
+						<DialogClose asChild>
+							<Button type="button" onClick={() => {
+								if (data.length) return save();
+								set(false)
+							}} variant="default">
+								Save
+							</Button>
+						</DialogClose>
+					</DialogFooter>
+				</DialogHeader>
+			</DialogContent>
+		</Dialog>
+	)
 }
 
 export default function Player({
 	className,
-	playerUrl,
 	...props
-}: PlayerProps) {
+}: React.HTMLAttributes<HTMLElement>) {
 	const [player, setPlayer] = useAtom(PlayerAtom);
-	const [queue, setQueue] = useAtom(QueueAtom);
+	const queue = useAtomValue(QueueAtom);
 	const [queueIndex, setQueueIndex] = useAtom(QueueIndexAtom);
 
 	const [paused, setPaused] = useState<boolean>(true);
@@ -38,6 +120,8 @@ export default function Player({
 	const [volume, setVolume] = useState<number>(100);
 	const [progress, setProgress] = useState<number>(0);
 	const [liked, setLiked] = useState<boolean>(false);
+	const [playlistDialogOpen, setPlaylistDialogOpen] = useState<boolean>(false);
+	const [playerUrl, setPlayerUrl] = useState<string>("");
 
 	const playerRef = useRef<HTMLAudioElement>(null);
 
@@ -67,6 +151,15 @@ export default function Player({
 		setLiked(!liked);
 	}
 
+	const seek = async (e: any): Promise<void> => {
+		if (!player.id) return;
+		let time = playerRef.current?.duration;
+		if (!time) return;
+		if (playerRef.current === null) return;
+		if (e.pageX === null || e.currentTarget === null) return;
+		playerRef.current.currentTime = time * (e.pageX / e.currentTarget.offsetWidth);
+	}
+
 	useEffect(() => {
 		let playerElem: HTMLAudioElement | null = null;
 
@@ -88,15 +181,18 @@ export default function Player({
 		playerElem?.addEventListener('play', () => setPaused(false));
 		playerElem?.addEventListener('pause', () => setPaused(true));
 
-		fetch(`/api/me/liked/${player.id}`).then(res => res.json()).then((data: { liked: boolean }) => {
-			if (data.liked) {
-				setLiked(true);
-			} else {
+		if (player.id) {
+			fetch(`/api/me/liked/${player.id}`).then(res => res.json()).then((data: { liked: boolean }) => {
+				if (data.liked) {
+					setLiked(true);
+				} else {
+					setLiked(false);
+				}
+			}).catch(() => {
 				setLiked(false);
-			}
-		}).catch(() => {
-			setLiked(false);
-		})
+			})
+			setPlayerUrl(`/api/stream/deezer/${player.id}.mp3`);
+		}
 
 		if (player?.album?.cover_medium) {
 			navigator.mediaSession.metadata = new MediaMetadata({
@@ -105,7 +201,7 @@ export default function Player({
 				album: player?.album?.title,
 				artwork: [
 					{
-						src: player?.album?.cover_medium,
+						src: '/image?q=' + player?.album?.cover_medium,
 						sizes: '250x250'
 					}
 				]
@@ -147,8 +243,8 @@ export default function Player({
 	return (
 		<>
 			<div {...props} className={cn(className, "fixed w-full bottom-0 border-t bg-background align-center ")}>
-				<div className='w-full h-[5px]'>
-					<div className={`bg-white rounded-sm h-full`} style={{ width: `${progress}%` }}></div>
+				<div className='w-full h-[6px]' onClick={seek}>
+					<div className={`bg-primary rounded-sm h-full`} style={{ width: `${progress}%` }}></div>
 				</div>
 				<div className="flex flex-row flex-nowrap justify-between w-full py-3 px-4">
 					<div className="flex items-center space-x-3 overflow-hidden">
@@ -178,7 +274,9 @@ export default function Player({
 						<TooltipProvider>
 							<Tooltip>
 								<TooltipTrigger>
-									<ListPlusIcon className="h-6 w-6" />
+									<ListPlusIcon onClick={() => {
+										if (player.id) setPlaylistDialogOpen(!playlistDialogOpen);
+									}} className="h-6 w-6" />
 								</TooltipTrigger>
 								<TooltipContent>
 									Add to Playlist
@@ -198,7 +296,8 @@ export default function Player({
 					</div>
 				</div>
 			</div>
-			<audio ref={playerRef} onEnded={skip} src={`${playerUrl ? `${playerUrl}/${player.id}.mp3` : player?.preview}`} autoPlay></audio>
+			<PlaylistModal player={player} open={playlistDialogOpen} set={setPlaylistDialogOpen} />
+			<audio ref={playerRef} onEnded={skip} src={playerUrl ?? ""} autoPlay></audio>
 		</>
 	)
 }

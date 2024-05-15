@@ -29,8 +29,6 @@ app.prepare().then(() => {
 		//Guest access
 		if ((path.startsWith('/track/') || path.startsWith('/album/') || path.startsWith('/artist/')) && !res.locals.user && guestsAllowed === "true") return handle(req, res);
 		if (!res.locals.user) return app.render(req, res, '/login');
-		//Only set the player url if the user is logged in
-		req.headers['player_url'] = process.env.PLAYER_URL as string
 		return handle(req, res);
 	});
 

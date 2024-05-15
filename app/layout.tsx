@@ -6,7 +6,6 @@ import NextTopLoader from 'nextjs-toploader';
 import { Toaster } from "@/components/ui/sonner"
 import Content from "@/components/Content";
 import { Provider } from "jotai";
-import { headers } from "next/headers";
 import Player from "@/components/Player";
 
 export const revalidate = 3600000;
@@ -17,18 +16,11 @@ export const metadata: Metadata = {
   description: "Sonata, your selfhosted music streaming platform.",
 };
 
-async function getPlayerUrl() {
-  const header = headers().get('player_url');
-  return header;
-}
-
 export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const playerUrl = await getPlayerUrl();
-
   return (
     <html lang="en">
       <body className={cn('dark min-h-screen bg-background font-sans antialiased', inter.variable)}>
@@ -39,7 +31,7 @@ export default async function RootLayout({
               {children}
             </Content>
           </div>
-          <Player playerUrl={playerUrl} className="z-[12] h-[89px]" />
+          <Player className="z-[12] h-[89px]" />
           <Toaster></Toaster>
         </Provider>
       </body>

@@ -17,4 +17,7 @@ RUN npm run build
 
 EXPOSE 3000
 
+# Needed for Deezer downloads to work with > Node 16
+ENV NODE_OPTIONS=--openssl-legacy-provider
+
 CMD ["npm", "run", "prod:start"]

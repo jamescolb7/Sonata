@@ -24,7 +24,7 @@ export default function Header({
 					<Image src={img} alt="" className="noselect_image max-w-xs rounded-2xl drop-shadow-2xl inline-block" style={{ maxWidth: 256 }}>
 					</Image>
 					<div className="md:inline-block md:ml-5">
-						<h1 className="tracking-tight font-semibold text-4xl mb-1 lg:text-6xl xl:text-8xl relative drop-shadow-lg">{title}</h1>
+						<h1 className="tracking-tight font-semibold text-4xl mb-1 lg:text-6xl xl:text-8xl relative drop-shadow-lg text-white">{title}</h1>
 						<Muted className="mb-1 ellipsis">
 							{type} {subtitle && <>&bull; {subtitle}</>}
 						</Muted>

@@ -9,7 +9,7 @@ export default function Search({ query }: { query: string }) {
 	const [data, setData] = useState([]);
 
 	useEffect(() => {
-		fetch(`https://api-music.inspare.cc/search?q=${encodeURI(query)}`).then(res => res.json()).then((res) => {
+		fetch(`/api/search?q=${encodeURI(query)}`).then(res => res.json()).then((res) => {
 			if (!res?.data) return;
 			setData(res?.data);
 		})
