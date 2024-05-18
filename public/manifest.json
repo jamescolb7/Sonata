@@ -1,0 +1,17 @@
+{
+	"name": "Sonata",
+	"short_name": "Sonata",
+	"theme_color": "#020817",
+	"background_color": "#020817",
+	"display": "standalone",
+	"orientation": "portrait",
+	"scope": "/",
+	"start_url": "/",
+	"icons": [
+		{
+			"src": "/icons/round.png",
+			"type": "image/png",
+			"sizes": "1024x1024"
+		}
+	]
+}

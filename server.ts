@@ -21,6 +21,7 @@ app.prepare().then(() => {
 	server.use(CSRF);
 	server.use(Auth);
 	server.use('/api', router);
+	server.use(express.static("public"));
 
 	server.all('*', (req: Request, res: Response) => {
 		const path = req.path ?? "";
