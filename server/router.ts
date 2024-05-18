@@ -4,8 +4,16 @@ import user from './user';
 import playlists from './playlists';
 import stream from './stream/route';
 import { GetTrack } from './fetch/track';
+import { client } from './db';
 
 const router = express.Router();
+
+router.get('/health', async (req: Request, res: Response) => {
+	const result = await client.$queryRaw`SELECT 1` as [];
+	return res.send({
+		healthy: result.length ? true : false
+	})
+})
 
 router.get('/track/:id', async (req: Request, res: Response) => {
 	let id = req.params.id;
