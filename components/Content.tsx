@@ -24,6 +24,7 @@ export default function Content({
 		if (!e.target.value) return setSearchQuery('');
 		if (timeout) clearTimeout(timeout);
 		timeout = setTimeout(() => {
+			setSidebarOpen(false);
 			setSearchQuery(e.target.value);
 		}, 200);
 	}
@@ -35,7 +36,7 @@ export default function Content({
 
 	return (
 		<>
-			<Sidebar className={`z-[11] w-80 top-0 ${sidebarOpen ? "" : "invisible"} mt-14 md:mt-0 fixed md:visible md:sticky`} />
+			<Sidebar className={`z-[11] w-80 top-0 mt-14 md:mt-0 fixed ${sidebarOpen ? "right-0" : "-right-80"} md:visible md:sticky`} />
 			<div className={cn(className, "flex flex-col w-full")}>
 				<header className="sticky top-0 bg-background z-[12] flex justify-center border-b">
 					<div className="flex items-center space-x-2 w-full h-16 px-4 mx-auto sm:px-6">

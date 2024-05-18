@@ -50,7 +50,7 @@ export default function Sidebar({
 
 	return (
 		<>
-			<aside className={cn('bg-background h-screen pb-12 border-r', className)}>
+			<aside className={cn('bg-background h-screen pb-12 border-l md:border-r transition-all', className)}>
 				<div className="space-y-4 py-4">
 					<div className="px-3 py-2">
 						<h2 className="mb-2 px-4 text-2xl font-semibold tracking-tight fixed invisible md:visible md:static">
