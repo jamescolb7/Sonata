@@ -3,7 +3,7 @@ import Header from "@/components/Header";
 import List from "@/components/List";
 import Fetch from "@/lib/Fetch";
 import { Album } from "@/types/Album";
-import { Artist } from "@/types/Artist";
+import { type Artist } from "@/types/Artist";
 import { type Track } from "@/types/Track";
 import { Metadata } from "next";
 import Link from "next/link";
@@ -44,7 +44,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 	}
 }
 
-export default async function Track({ params }: Props) {
+export default async function Artist({ params }: Props) {
 	const dataData = getData(params.id);
 	const tracksData = getTopTracks(params.id);
 	const albumsData = getAlbums(params.id);

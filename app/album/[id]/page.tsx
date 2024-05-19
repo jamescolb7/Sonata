@@ -1,7 +1,7 @@
 import Header from "@/components/Header";
 import List from "@/components/List";
 import Fetch from "@/lib/Fetch";
-import { Album } from "@/types/Album";
+import { type Album } from "@/types/Album";
 import { Metadata } from "next";
 
 const base = process.env.BASE_URL as string;
@@ -30,7 +30,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 	}
 }
 
-export default async function Track({ params }: Props) {
+export default async function Album({ params }: Props) {
 	const data = await getData(params.id);
 
 	return (

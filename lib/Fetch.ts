@@ -8,6 +8,6 @@ export default async function Fetch(url: string): Promise<any> {
 	if (!res.ok) throw new Error('An Error Occurred');
 	let json = await res.json();
 	if (json?.error?.message) throw new Error('Not Found');
-	if (!json?.id && !json?.data && !json?.tracks) throw new Error('Not Found')
+	if (!json?.id && !json?.name && !json?.data && !json?.tracks) throw new Error('Not Found')
 	return json;
 }
