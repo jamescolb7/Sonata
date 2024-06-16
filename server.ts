@@ -1,3 +1,5 @@
+import 'dotenv/config';
+
 import express, { Request, Response } from "express";
 import next from "next";
 import morgan from 'morgan';

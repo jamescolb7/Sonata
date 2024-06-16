@@ -19,6 +19,9 @@ const config = {
       },
     },
     extend: {
+      blur: {
+        xs: "2px"
+      },
       fontFamily: {
         sans: ["var(--font-sans)", ...fontFamily.sans],
       },

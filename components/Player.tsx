@@ -3,7 +3,7 @@
 import { useAtom, useAtomValue } from "jotai";
 import { cn } from "@/lib/utils";
 import { Slider } from "./ui/slider";
-import { Heart, HeartOffIcon, ListPlusIcon, Pause, Play, SkipBack, SkipForward, Volume, Volume1, Volume2 } from "lucide-react";
+import { Heart, HeartOffIcon, ListPlusIcon, Pause, Play, SkipBack, SkipForward, Volume, Volume1, Volume2, Mic2 } from "lucide-react";
 import { PlayerAtom, QueueAtom, QueueIndexAtom } from "@/lib/PlayerState";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
@@ -22,6 +22,7 @@ import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Button } from "./ui/button";
 import { Track } from "@/types/Track";
+import Lyrics from './Lyrics';
 
 const pad = (num: number) => num.toString().padStart(2, "0");
 
@@ -79,7 +80,7 @@ function PlaylistModal({ open, set, player }: PlaylistModalProps) {
 
 					</DialogDescription>
 					<div>
-						<RadioGroup onValueChange={(e) => { setSelected(e) }} defaultValue={`option_0`} className="gap-0 mt-2 mb-3">
+						<RadioGroup onValueChange={(e: any) => { setSelected(e) }} defaultValue={`option_0`} className="gap-0 mt-2 mb-3">
 							{data.map((playlist, i) => {
 								return (
 									<div key={i} className={`flex items-center space-x-2 p-4 hover:bg-secondary transition-colors ${i === 0 ? "border rounded-t-lg" : i + 1 === data.length ? "border rounded-b-lg border-t-0" : "border-x border-b"}`}>
@@ -121,6 +122,7 @@ export default function Player({
 	const [progress, setProgress] = useState<number>(0);
 	const [liked, setLiked] = useState<boolean>(false);
 	const [playlistDialogOpen, setPlaylistDialogOpen] = useState<boolean>(false);
+	const [lyricsDialogOpen, setLyricsDialogOpen] = useState<boolean>(false);
 	const [playerUrl, setPlayerUrl] = useState<string>("");
 
 	const playerRef = useRef<HTMLAudioElement>(null);
@@ -290,6 +292,18 @@ export default function Player({
 						<SkipForward onClick={skip} className="h-8 w-8" />
 					</div>
 					<div className="flex items-center space-x-3 fixed invisible md:static md:visible">
+						<TooltipProvider>
+							<Tooltip>
+								<TooltipTrigger>
+									<Mic2 className="h-6 w-6 cursor-pointer" onClick={() => {
+										if (player.id) setLyricsDialogOpen(!lyricsDialogOpen)
+									}}></Mic2>
+								</TooltipTrigger>
+								<TooltipContent>
+									Live Lyrics
+								</TooltipContent>
+							</Tooltip>
+						</TooltipProvider>
 						{volume === 0 ? <Volume className="h-8 w-8" /> : volume < 50 ? <Volume1 className="h-8 w-8"></Volume1> : <Volume2 className="h-8 w-8"></Volume2>}
 						<Slider className="w-[100px]" onValueChange={changeVolume} defaultValue={[volume]} max={100} step={0.01}></Slider>
 						<p className="font-semibold">{time} / {duration}</p>
@@ -297,6 +311,7 @@ export default function Player({
 				</div>
 			</div>
 			<PlaylistModal player={player} open={playlistDialogOpen} set={setPlaylistDialogOpen} />
+			<Lyrics player={player} open={lyricsDialogOpen} set={setLyricsDialogOpen} />
 			<audio ref={playerRef} onEnded={skip} src={playerUrl ?? ""} autoPlay></audio>
 		</>
 	)
