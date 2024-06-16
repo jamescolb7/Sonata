@@ -1,12 +1,12 @@
 import express, { Request, Response } from "express";
-import { GetTrack } from "./fetch/track";
+import { Deezer } from "./proxy";
 
 const router = express.Router();
 
 router.get('/:id', async (req: Request, res: Response) => {
     if (!res.locals.user) return res.sendStatus(403);
 
-    GetTrack(req.params.id).catch(() => {
+    Deezer(`/track/${req.params.id}`).catch(() => {
         return res.sendStatus(404);
     }).then(async (data) => {
         const request = await fetch(`https://lrclib.net/api/get?artist_name=${encodeURI(data.artist.name)}&track_name=${encodeURI(data.title)}&album_name=${encodeURI(data.album.title)}&duration=${data.duration}`, {

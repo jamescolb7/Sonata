@@ -32,7 +32,7 @@ function Lyrics({ data }: { data: { time: number, text: string }[] }) {
     return (
         <>
             {data.map((lyric, i) => {
-                if (time >= lyric.time && time < data[i + 1].time) {
+                if (data[i + 1] && time >= lyric.time && time < data[i + 1].time) {
                     if (selectedLyric !== i) setSelectedLyric(i);
                 };
                 return (
