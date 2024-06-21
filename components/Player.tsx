@@ -250,10 +250,10 @@ export default function Player({
 				</div>
 				<div className="flex flex-row flex-nowrap justify-between w-full py-3 px-4">
 					<div className="flex items-center space-x-3 overflow-hidden">
-						<Image className="h-14 w-14 rounded-md border indent-[-10000px]" src={player?.album ? player?.album?.cover_small : ""} alt="" />
+						<Image className="h-11 w-11 sm:h-14 sm:w-14 rounded-md border indent-[-10000px]" src={player?.album ? player?.album?.cover_small : ""} alt="" />
 						<div className="overflow-hidden">
 							<Link href={`/album/${player?.album?.id}`}>
-								<h3 className="text-lg font-semibold text-nowrap">
+								<h3 className="text-base sm:text-lg font-semibold text-nowrap">
 									{player.title}
 								</h3>
 							</Link>
@@ -287,9 +287,9 @@ export default function Player({
 						</TooltipProvider>
 					</div>
 					<div className="flex items-center flex-row space-x-3 cursor-pointer">
-						<SkipBack onClick={back} className="h-8 w-8 fixed invisible md:static md:visible" />
-						{paused ? <Play onClick={togglePlay} className="h-8 w-8" /> : <Pause onClick={togglePlay} className="h-8 w-8" />}
-						<SkipForward onClick={skip} className="h-8 w-8" />
+						<SkipBack onClick={back} className="h-7 w-7 sm:h-8 sm:w-8 fixed invisible md:static md:visible" />
+						{paused ? <Play onClick={togglePlay} className="h-7 w-7 sm:h-8 sm:w-8" /> : <Pause onClick={togglePlay} className="h-7 w-7 sm:h-8 sm:w-8" />}
+						<SkipForward onClick={skip} className="h-7 w-7 sm:h-8 sm:w-8" />
 					</div>
 					<div className="flex items-center space-x-3 fixed invisible md:static md:visible">
 						<TooltipProvider>
