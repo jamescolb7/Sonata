@@ -2,7 +2,7 @@
 
 import { Track } from '@/types/Track';
 import { Track as PrismaTrack } from '@prisma/client';
-import { PlayerAtom, QueueAtom, QueueIndexAtom } from '@/lib/PlayerState';
+import { PlayerAtom, QueueAtom, QueueIndexAtom, PlaylistDialog } from '@/lib/State';
 import { useAtom } from 'jotai';
 import {
 	ColumnDef,
@@ -19,6 +19,16 @@ import {
 	TableHeader,
 	TableRow,
 } from "@/components/ui/table"
+import {
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuLabel,
+	DropdownMenuSeparator,
+	DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { MoreHorizontal } from 'lucide-react';
+import { Button } from './ui/button';
 import { formatTime } from "@/lib/utils"
 import Image from './Image';
 
@@ -27,7 +37,11 @@ interface DataTableProps<TData, TValue> {
 	data: any[]
 }
 
-const columnHelper = createColumnHelper<Track>();
+interface columnData extends Track {
+	actions: string
+}
+
+const columnHelper = createColumnHelper<columnData>();
 
 const columns = [
 	columnHelper.accessor('album.cover_small', {
@@ -49,8 +63,34 @@ const columns = [
 	columnHelper.accessor('duration', {
 		header: "Time",
 		cell: props => formatTime(props.getValue())
-	})
-] as Array<ColumnDef<Track, unknown>>;
+	}),
+	// columnHelper.accessor('actions', {
+	// 	header: "",
+	// 	enableHiding: false,
+	// 	cell: ({ row }) => {
+	// 		return (
+	// 			<DropdownMenu>
+	// 				<DropdownMenuTrigger asChild>
+	// 					<Button variant="ghost" className="h-8 w-8 p-0">
+	// 						<span className="sr-only">Open menu</span>
+	// 						<MoreHorizontal className="h-4 w-4" />
+	// 					</Button>
+	// 				</DropdownMenuTrigger>
+	// 				<DropdownMenuContent align="end">
+	// 					<DropdownMenuItem
+	// 						onClick={() => navigator.clipboard.writeText(`${window.location.protocol}//${window.location.host}/track/${row.original.id}`)}
+	// 					>
+	// 						Copy Link
+	// 					</DropdownMenuItem>
+	// 					<DropdownMenuSeparator />
+	// 					<DropdownMenuItem onClick={() => {}}>Add to Playlist</DropdownMenuItem>
+	// 					<DropdownMenuItem>Like Song</DropdownMenuItem>
+	// 				</DropdownMenuContent>
+	// 			</DropdownMenu>
+	// 		)
+	// 	},
+	// })
+] as Array<ColumnDef<unknown>>;
 
 export function DataTable<TData, TValue>({
 	columns,
@@ -59,6 +99,7 @@ export function DataTable<TData, TValue>({
 	const [player, setPlayer] = useAtom(PlayerAtom);
 	const [queue, setQueue] = useAtom(QueueAtom);
 	const [queueIndex, setQueueIndex] = useAtom(QueueIndexAtom);
+	const [playlistDialogOpen, setPlaylistDialogOpen] = useAtom(PlaylistDialog);
 
 	const table = useReactTable({
 		data,
@@ -105,11 +146,31 @@ export function DataTable<TData, TValue>({
 								}}
 								data-state={row.getIsSelected() && "selected"}
 							>
-								{row.getVisibleCells().map((cell, index) => (
+								{row.getVisibleCells().map((cell, index: number) => (
 									<TableCell key={cell.id}>
 										{flexRender(cell.column.columnDef.cell, cell.getContext())}
 									</TableCell>
 								))}
+								<TableCell>
+									<DropdownMenu>
+										<DropdownMenuTrigger asChild>
+											<Button variant="ghost" className="h-8 w-8 p-0">
+												<span className="sr-only">Open menu</span>
+												<MoreHorizontal className="h-4 w-4" />
+											</Button>
+										</DropdownMenuTrigger>
+										<DropdownMenuContent align="end">
+											<DropdownMenuItem
+												onClick={() => navigator.clipboard.writeText(`${window.location.protocol}//${window.location.host}/track/${row.original.id}`)}
+											>
+												Copy Link
+											</DropdownMenuItem>
+											<DropdownMenuSeparator />
+											<DropdownMenuItem onClick={() => { setPlaylistDialogOpen(true) }}>Add to Playlist</DropdownMenuItem>
+											<DropdownMenuItem onClick={() => {}}>Like Song</DropdownMenuItem>
+										</DropdownMenuContent>
+									</DropdownMenu>
+								</TableCell>
 							</TableRow>
 						))
 					) : (

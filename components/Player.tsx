@@ -4,7 +4,7 @@ import { useAtom, useAtomValue } from "jotai";
 import { cn } from "@/lib/utils";
 import { Slider } from "./ui/slider";
 import { Heart, HeartOffIcon, ListPlusIcon, Pause, Play, SkipBack, SkipForward, Volume, Volume1, Volume2, Mic2 } from "lucide-react";
-import { PlayerAtom, QueueAtom, QueueIndexAtom } from "@/lib/PlayerState";
+import { PlayerAtom, PlaylistDialog, QueueAtom, QueueIndexAtom } from "@/lib/State";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./ui/tooltip";
@@ -121,8 +121,12 @@ export default function Player({
 	const [volume, setVolume] = useState<number>(100);
 	const [progress, setProgress] = useState<number>(0);
 	const [liked, setLiked] = useState<boolean>(false);
+<<<<<<< Updated upstream
 	const [playlistDialogOpen, setPlaylistDialogOpen] = useState<boolean>(false);
 	const [lyricsDialogOpen, setLyricsDialogOpen] = useState<boolean>(false);
+=======
+	const [playlistDialogOpen, setPlaylistDialogOpen] = useAtom(PlaylistDialog);
+>>>>>>> Stashed changes
 	const [playerUrl, setPlayerUrl] = useState<string>("");
 
 	const playerRef = useRef<HTMLAudioElement>(null);

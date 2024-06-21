@@ -31,7 +31,7 @@ export default async function RootLayout({
         <meta name="apple-mobile-web-app-title" content="Sonata" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
       </head>
-      <body className={cn('dark min-h-screen bg-background font-sans antialiased', inter.variable)}>
+      <body className={cn('min-h-screen bg-background font-sans antialiased', inter.variable)}>
         <Provider>
           <NextTopLoader color="#3b83f7" showSpinner={false} />
           <div className="flex flex-row">
