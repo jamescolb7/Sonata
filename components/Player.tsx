@@ -91,7 +91,7 @@ function PlaylistModal({ open, set, player }: PlaylistModalProps) {
 							})}
 						</RadioGroup>
 					</div>
-					<DialogFooter>
+					{data.length > 0 && <DialogFooter>
 						<DialogClose asChild>
 							<Button type="button" onClick={() => {
 								if (data.length) return save();
@@ -100,7 +100,7 @@ function PlaylistModal({ open, set, player }: PlaylistModalProps) {
 								Save
 							</Button>
 						</DialogClose>
-					</DialogFooter>
+					</DialogFooter>}
 				</DialogHeader>
 			</DialogContent>
 		</Dialog>
@@ -121,12 +121,8 @@ export default function Player({
 	const [volume, setVolume] = useState<number>(100);
 	const [progress, setProgress] = useState<number>(0);
 	const [liked, setLiked] = useState<boolean>(false);
-<<<<<<< Updated upstream
-	const [playlistDialogOpen, setPlaylistDialogOpen] = useState<boolean>(false);
-	const [lyricsDialogOpen, setLyricsDialogOpen] = useState<boolean>(false);
-=======
 	const [playlistDialogOpen, setPlaylistDialogOpen] = useAtom(PlaylistDialog);
->>>>>>> Stashed changes
+	const [lyricsDialogOpen, setLyricsDialogOpen] = useState<boolean>(false);
 	const [playerUrl, setPlayerUrl] = useState<string>("");
 
 	const playerRef = useRef<HTMLAudioElement>(null);
