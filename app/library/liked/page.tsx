@@ -54,7 +54,7 @@ export default async function Liked({ params }: { params: { id: string } }) {
 
 	return (
 		<>
-			<Header img="/heart.png" title="Liked" type="Playlist"></Header>
+			<Header img="/heart.png" title="Liked" type="Playlist" tracks={data}></Header>
 			<List data={data}></List>
 		</>
 	)

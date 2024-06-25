@@ -35,7 +35,7 @@ export default async function Album({ params }: Props) {
 
 	return (
 		<>
-			<Header img={data.cover_big} title={data.title} type="Album" subtitle={data.artist.name}></Header>
+			<Header img={data.cover_big} title={data.title} type="Album" subtitle={data.artist.name} tracks={data.tracks.data}></Header>
 			<List data={data.tracks.data}></List>
 		</>
 	)

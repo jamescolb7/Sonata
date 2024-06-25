@@ -44,7 +44,7 @@ export default async function Editorial({ params }: Props) {
 
 	return (
 		<>
-			<Header img={data.picture_big} title={data.name} type="Album" ></Header>
+			<Header img={data.picture_big} title={data.name} type="Album" tracks={tracks.tracks.data}></Header>
 			<List data={tracks.tracks.data}></List>
 		</>
 	)

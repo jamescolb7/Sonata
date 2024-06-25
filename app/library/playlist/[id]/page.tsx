@@ -70,7 +70,7 @@ export default async function Playlist({ params }: Props) {
 
     return (
         <>
-            <Header title={playlist.name} img="/playlist.png" type="Playlist" subtitle="Created by you"></Header>
+            <Header title={playlist.name} img="/playlist.png" type="Playlist" subtitle="Created by you" tracks={tracks}></Header>
             <List data={tracks}></List>
         </>
     )

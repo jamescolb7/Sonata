@@ -16,7 +16,7 @@ async function getData(id: string): Promise<Artist> {
 }
 
 async function getTopTracks(id: string): Promise<Track[]> {
-	let res = await Fetch(`artist/${id}/top`);
+	let res = await Fetch(`artist/${id}/top?limit=7`);
 	return res.data;
 }
 
