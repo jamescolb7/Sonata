@@ -36,10 +36,13 @@ export default function Header({
 
 	const shuffle = () => {
 		if (!tracks) return;
-		const arr = tracks.sort(() => Math.random() - 0.5);
-		setPlayer(arr[0]);
+		for (let i = tracks.length - 1; i > 0; i--) {
+			const j = Math.floor(Math.random() * (i + 1));
+			[tracks[i], tracks[j]] = [tracks[j], tracks[i]];
+		}
+		setPlayer(tracks[0]);
 		setQueueIndex(0);
-		setQueue(arr);
+		setQueue(tracks);
 	}
 
 	return (
