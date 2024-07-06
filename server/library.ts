@@ -12,6 +12,7 @@ router.use((req, res, next) => {
 router.get('/liked', async (req: Request, res: Response) => {
     try {
         const limit = req.query.limit ? Number(req.query.limit) : undefined;
+        const order = limit ? "desc" : "asc";
 
         let data = await client.liked.findMany({
             take: limit,
@@ -19,7 +20,7 @@ router.get('/liked', async (req: Request, res: Response) => {
                 userId: res.locals.user.id
             },
             orderBy: [
-                { createdAt: 'asc' }
+                { createdAt: order }
             ],
             include: {
                 track: {
