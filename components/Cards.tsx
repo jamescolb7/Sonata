@@ -1,9 +1,10 @@
 import Image from "./Image";
 import { ScrollArea, ScrollBar } from "./ui/scroll-area";
 import { cn } from "@/lib/utils";
+import { Skeleton } from "./ui/skeleton";
 
 interface CardProps extends React.HTMLAttributes<HTMLElement> {
-	title: string,
+	title?: string,
 	subtitle?: string,
 	image?: string,
 	aspectRatio?: "portrait" | "square",

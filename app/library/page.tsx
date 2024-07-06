@@ -1,88 +1,54 @@
+'use client';
+
 import { CardCollection, ScrollCard } from "@/components/Cards";
 import { Muted, Title } from "@/components/Text";
-import { cookies } from "next/headers";
-import { lucia } from '@/lib/Auth'
 import { Separator } from "@/components/ui/separator";
-import { client } from "@/lib/db";
 import Link from "next/link";
-import { Session, User } from "lucia";
-import PlaylistCreate from "./PlaylistCreate";
+import { useQuery } from "@tanstack/react-query";
+import { Track } from "@/types/Track";
+import {
+	Dialog,
+	DialogClose,
+	DialogContent,
+	DialogDescription,
+	DialogFooter,
+	DialogHeader,
+	DialogTitle,
+	DialogTrigger
+} from "@/components/ui/dialog"
+import { useRef } from "react";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import Spinner from "@/components/Spinner";
 
-export const dynamic = 'force-dynamic'
-export const revalidate = 0;
-
-async function validateRequest() {
-	let sessionId = cookies().get(lucia.sessionCookieName)?.value
-	if (!sessionId) return { user: null, session: null };
-	const user = await lucia.validateSession(sessionId);
-	return user;
-}
-
-async function getLiked(user: { user: User, session: Session }) {
-	return await client.liked.findMany({
-		take: 6,
-		orderBy: [
-			{
-				createdAt: 'desc'
-			}
-		],
-		where: {
-			userId: user.user.id
+export default function Library() {
+	const liked = useQuery({
+		queryKey: ['liked'],
+		queryFn: async () => {
+			return await (await fetch(`/api/library/liked?limit=6`)).json();
 		},
-		include: {
-			track: {
-				include: {
-					album: true
-				}
-			}
-		}
+		staleTime: 0,
+		refetchOnWindowFocus: false
 	})
-}
 
-async function getPlaylists(user: { user: User, session: Session }) {
-	return await client.playlists.findMany({
-		orderBy: [
-			{
-				createdAt: "desc"
-			}
-		],
-		where: {
-			userId: user.user.id
-		}
-	})
-}
-
-async function getHistory(user: { user: User, session: Session }) {
-	return await client.history.findMany({
-		take: 7,
-		orderBy: [
-			{
-				createdAt: 'desc'
-			}
-		],
-		where: {
-			userId: user.user.id
+	const history = useQuery({
+		queryKey: ['history'],
+		queryFn: async () => {
+			return await (await fetch(`/api/library/history`)).json();
 		},
-		include: {
-			track: {
-				include: {
-					album: true
-				}
-			}
-		}
+		staleTime: 0,
+		refetchOnWindowFocus: false
 	})
-}
 
-export default async function Library() {
-	const user = await validateRequest();
-
-	if (user.user === null) return;
-
-	const likedData = getLiked(user);
-	const historyData = getHistory(user);
-	const playlistData = getPlaylists(user);
-
-	const [liked, history, playlists] = await Promise.all([likedData, historyData, playlistData]);
+	const playlists = useQuery({
+		queryKey: ['playlists'],
+		queryFn: async () => {
+			return await (await fetch(`/api/playlists/list`)).json();
+		},
+		staleTime: 0,
+		refetchOnWindowFocus: false
+	})
 
 	return (
 		<>
@@ -93,14 +59,17 @@ export default async function Library() {
 					<Muted className="-mt-4 mb-4">Your most recently played songs.</Muted>
 					<Separator className="my-4" />
 					<CardCollection>
-						{!history.length && <Muted className="text-center">Play some songs and they will appear here.</Muted>}
-						{history.map((item, index) => {
-							return (
-								<Link href={`/track/${item.track.id}`} key={index}>
-									<ScrollCard title={item.track.title} image={item.track.album?.cover_medium} subtitle={"Track"} width={220} height={220}></ScrollCard>
-								</Link>
-							)
-						})}
+						{history.isLoading && <Spinner />}
+						{!history.isLoading && history.data && <>
+							{!history.data.length && <Muted className="text-center">Play some songs and they will appear here.</Muted>}
+							{history.data.map((item: { track: Track }, index: number) => {
+								return (
+									<Link href={`/track/${item.track.id}`} key={index}>
+										<ScrollCard title={item.track.title} image={item.track.album?.cover_medium} subtitle={"Track"} width={220} height={220}></ScrollCard>
+									</Link>
+								)
+							})}
+						</>}
 					</CardCollection>
 				</div>
 				<div>
@@ -108,17 +77,20 @@ export default async function Library() {
 					<Muted className="-mt-4 mb-4">Your currently liked songs.</Muted>
 					<Separator className="my-4" />
 					<CardCollection>
-						{!history.length && <Muted className="text-center">Like some songs and they will appear here.</Muted>}
-						{history.length !== 0 && <Link href={`/library/liked`}>
-							<ScrollCard title="View All" image="/arrow.png" subtitle="Show your liked songs" width={220} height={220}></ScrollCard>
-						</Link>}
-						{liked.map((item, index) => {
-							return (
-								<Link href={`/track/${item.track.id}`} key={index}>
-									<ScrollCard title={item.track.title} image={item.track.album?.cover_medium} subtitle={"Track"} width={220} height={220}></ScrollCard>
-								</Link>
-							)
-						})}
+						{liked.isLoading && <Spinner />}
+						{!liked.isLoading && liked.data && <>
+							{!liked.data.length && <Muted className="text-center">Like some songs and they will appear here.</Muted>}
+							{liked.data.length !== 0 && <Link href={`/library/liked`}>
+								<ScrollCard title="View All" image="/arrow.png" subtitle="Show your liked songs" width={220} height={220}></ScrollCard>
+							</Link>}
+							{liked.data.map((item: Track, index: number) => {
+								return (
+									<Link href={`/track/${item.id}`} key={index}>
+										<ScrollCard title={item.title} image={item.album?.cover_medium} subtitle={"Track"} width={220} height={220}></ScrollCard>
+									</Link>
+								)
+							})}
+						</>}
 					</CardCollection>
 				</div>
 				<div>
@@ -127,9 +99,10 @@ export default async function Library() {
 					<Separator className="my-4" />
 					<CardCollection>
 						<div className="cursor-pointer">
-							<PlaylistCreate action={CreatePlaylist}></PlaylistCreate>
+							<PlaylistCreate />
 						</div>
-						{playlists.map((item, index) => {
+						{playlists.isLoading && <Spinner />}
+						{!playlists.isLoading && playlists.data && playlists.data.map((item: { id: string, name: string }, index: number) => {
 							return (
 								<Link href={`/library/playlist/${item.id}`} key={index}>
 									<ScrollCard title={item.name} image="/playlist.png" subtitle="Playlist" width={220} height={220}></ScrollCard>
@@ -143,24 +116,46 @@ export default async function Library() {
 	)
 }
 
-async function CreatePlaylist(name: string | null) {
-	'use server';
+function PlaylistCreate() {
+	const input = useRef<HTMLInputElement>(null);
 
-	if (name === null) return;
+	async function submit() {
+		if (!input?.current?.value) return;
+		let res = await fetch(`/api/playlists/create/${input.current.value}`);
+	}
 
-	const user = await validateRequest();
-
-	if (user.user === null) return;
-
-	await client.playlists.create({
-		data: {
-			name: name,
-			user: {
-				connect: {
-					id: user.user.id,
-					email: user.user.email
-				}
-			}
-		}
-	})
+	return (
+		<Dialog>
+			<DialogTrigger asChild>
+				<ScrollCard title="Create" image="/plus.png" subtitle="Create a playlist" width={220} height={220}></ScrollCard>
+			</DialogTrigger>
+			<DialogContent className="sm:max-w-md">
+				<DialogHeader>
+					<DialogTitle>Create Playlist</DialogTitle>
+					<DialogDescription>
+						Create a new playlist.
+					</DialogDescription>
+				</DialogHeader>
+				<div className="flex items-center space-x-2">
+					<div className="grid flex-1 gap-2">
+						<Label htmlFor="playlist_name" className="sr-only">
+							Playlist Name
+						</Label>
+						<Input
+							id="playlist_name"
+							ref={input}
+							defaultValue="Playlist Name"
+						/>
+					</div>
+				</div>
+				<DialogFooter className="sm:justify-start">
+					<DialogClose asChild>
+						<Button type="button" onClick={() => { submit() }} variant="default">
+							Create
+						</Button>
+					</DialogClose>
+				</DialogFooter>
+			</DialogContent>
+		</Dialog>
+	)
 }

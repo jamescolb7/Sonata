@@ -4,6 +4,7 @@ import user from './user';
 import playlists from './playlists';
 import stream from './stream/route';
 import lyrics from './lyrics';
+import library from './library';
 import { GetTrack } from './fetch/track';
 import { client } from './db';
 
@@ -28,8 +29,9 @@ router.get('/track/:id', async (req: Request, res: Response) => {
 
 router.use('/stream', stream);
 router.use('/me', user);
-router.use('/playlists', playlists)
-router.use('/lyrics', lyrics)
-router.use('', proxy('api.deezer.com'))
+router.use('/library', library);
+router.use('/playlists', playlists);
+router.use('/lyrics', lyrics);
+router.use('', proxy('api.deezer.com'));
 
 export default router;

@@ -23,6 +23,28 @@ router.get('/list', async (req: Request, res: Response) => {
 	return res.send(data);
 })
 
+router.get('/create/:name', async (req: Request, res: Response) => {
+	if (!req.params.name) return res.sendStatus(400);
+
+	try {
+		const data = await client.playlists.create({
+			data: {
+				name: req.params.name,
+				user: {
+					connect: {
+						id: res.locals.user.id,
+						email: res.locals.user.email
+					}
+				}
+			}
+		})
+
+		if (data) return res.sendStatus(201);
+	} catch (e) {
+		return res.sendStatus(500);
+	}
+})
+
 router.get('/set/:id/:track', async (req: Request, res: Response) => {
 	const track = await GetTrack(req.params.track);
 	try {

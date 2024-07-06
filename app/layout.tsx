@@ -7,6 +7,8 @@ import { Toaster } from "@/components/ui/sonner"
 import Content from "@/components/Content";
 import { Provider } from "jotai";
 import Player from "@/components/Player";
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import Providers from "./providers";
 
 export const revalidate = 3600000;
 export const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
@@ -15,6 +17,8 @@ export const metadata: Metadata = {
   title: "Sonata",
   description: "Sonata, your selfhosted music streaming platform.",
 };
+
+const queryClient = new QueryClient();
 
 export default async function RootLayout({
   children,
@@ -33,14 +37,16 @@ export default async function RootLayout({
       </head>
       <body className={cn('dark min-h-screen bg-background font-sans antialiased', inter.variable)}>
         <Provider>
-          <NextTopLoader color="#3b83f7" showSpinner={false} />
-          <div className="flex flex-row">
-            <Content>
-              {children}
-            </Content>
-          </div>
-          <Player className="z-[12] h-[89px]" />
-          <Toaster></Toaster>
+          <Providers>
+            <NextTopLoader color="#3b83f7" showSpinner={false} />
+            <div className="flex flex-row">
+              <Content>
+                {children}
+              </Content>
+            </div>
+            <Player className="z-[12] h-[89px]" />
+            <Toaster></Toaster>
+          </Providers>
         </Provider>
       </body>
     </html>
