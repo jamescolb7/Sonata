@@ -36,7 +36,7 @@ function Lyrics({ data }: { data: { time: number, text: string }[] }) {
                     if (selectedLyric !== i) setSelectedLyric(i);
                 };
                 return (
-                    <h1 id={`lyric_${i}`} key={i} className={`transition text-2xl mb-3 font-semibold ${selectedLyric === i ? " opacity-100 blur-none" : "opacity-50 blur-xs scale-95"}`}>{lyric.text}</h1>
+                    <h1 id={`lyric_${i}`} key={i} className={`transition text-2xl mb-3 font-semibold ${selectedLyric === i ? " opacity-100" : "opacity-50 scale-95"}`}>{lyric.text}</h1>
                 )
             })}
         </>
