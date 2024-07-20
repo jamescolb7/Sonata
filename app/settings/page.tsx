@@ -6,7 +6,7 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@/components/ui/card";
-import { EarIcon, LucideIcon, UserCircle } from "lucide-react";
+import { AudioLines, LucideIcon, UserCircle } from "lucide-react";
 import Link from 'next/link';
 
 interface SettingsType {
@@ -24,10 +24,10 @@ const settings: SettingsType[] = [
 		icon: UserCircle,
 	},
 	{
-		name: "Quality",
-		description: "Change your music quality.",
-		route: "quality",
-		icon: EarIcon
+		name: "Audio",
+		description: "Change settings related to your audio experience.",
+		route: "audio",
+		icon: AudioLines
 	}
 ]
 

@@ -8,8 +8,14 @@ const router = express.Router();
 const temp = os.tmpdir();
 export const path = `${temp}/SonataServer`
 
-router.get('/:plugin/:id.mp3', async (req: Request, res: Response) => {
+router.get('/:plugin/:id', async (req: Request, res: Response) => {
     if (!res.locals.user) return res.sendStatus(403);
+
+    const id = req.params.id.split('.')[0];
+    if (isNaN(Number(id))) return res.sendStatus(400);
+
+    const format = req.params.id.split('.')[1];
+    if (!['mp3', 'flac'].includes(format)) return res.sendStatus(400);
 
     let quality = Number(req.query.quality as unknown) || 3;
 
@@ -19,12 +25,12 @@ router.get('/:plugin/:id.mp3', async (req: Request, res: Response) => {
     }
 
     let success = true;
-    const filePath = `${path}/${req.params.plugin}/${req.params.id}_${quality}`;
+    const filePath = `${path}/${req.params.plugin}/${id}_${quality}`;
 
     if (!fs.existsSync(filePath)) {
         switch (req.params.plugin) {
             case 'deezer':
-                await DeezerDownload(req.params.id, quality).catch((e) => {
+                await DeezerDownload(id, quality).catch((e) => {
                     console.log(e);
                     return success = false;
                 });

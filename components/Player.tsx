@@ -194,7 +194,11 @@ export default function Player({
 			}).catch(() => {
 				setLiked(false);
 			})
-			setPlayerUrl(`/api/stream/deezer/${player.id}.mp3`);
+
+			//Quality
+			const quality = localStorage.getItem('quality');
+
+			setPlayerUrl(`/api/stream/deezer/${player.id}.${Number(quality) === 9 ? "flac" : "mp3"}${quality ? `?quality=${quality}` : ""}`);
 		}
 
 		if (player?.album?.cover_medium) {
