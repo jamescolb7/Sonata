@@ -1,7 +1,7 @@
 import { Card } from "@/components/Cards";
 import { Muted, Title } from "@/components/Text";
 import { Separator } from "@/components/ui/separator";
-import Fetch from "@/lib/Fetch";
+import { FetchDeezer } from "@/lib/Fetch";
 import Link from "next/link";
 
 interface Editorial {
@@ -11,7 +11,7 @@ interface Editorial {
 }
 
 async function getData(): Promise<{ data: Editorial[] }> {
-	return await Fetch(`editorial`);
+	return await FetchDeezer(`editorial`);
 }
 
 export default async function Browse() {

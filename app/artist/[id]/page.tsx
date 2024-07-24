@@ -1,7 +1,7 @@
 import { Card } from "@/components/Cards";
 import Header from "@/components/Header";
 import List from "@/components/List";
-import Fetch from "@/lib/Fetch";
+import { FetchDeezer } from "@/lib/Fetch";
 import { Album } from "@/types/Album";
 import { type Artist } from "@/types/Artist";
 import { type Track } from "@/types/Track";
@@ -12,16 +12,16 @@ const base = process.env.BASE_URL as string;
 const base_url = new URL(base);
 
 async function getData(id: string): Promise<Artist> {
-	return await Fetch(`artist/${id}`)
+	return await FetchDeezer(`artist/${id}`)
 }
 
 async function getTopTracks(id: string): Promise<Track[]> {
-	let res = await Fetch(`artist/${id}/top?limit=7`);
+	let res = await FetchDeezer(`artist/${id}/top?limit=7`);
 	return res.data;
 }
 
 async function getAlbums(id: string): Promise<Album[]> {
-	let res = await Fetch(`artist/${id}/albums`);
+	let res = await FetchDeezer(`artist/${id}/albums`);
 	return res.data;
 }
 

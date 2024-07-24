@@ -1,6 +1,6 @@
 import Header from "@/components/Header";
 import List from "@/components/List";
-import Fetch from "@/lib/Fetch";
+import { FetchDeezer } from "@/lib/Fetch";
 import { type Album } from "@/types/Album";
 import { Metadata } from "next";
 
@@ -8,7 +8,7 @@ const base = process.env.BASE_URL as string;
 const base_url = new URL(base);
 
 async function getData(id: string): Promise<Album> {
-	return await Fetch(`album/${id}`);
+	return await FetchDeezer(`album/${id}`);
 }
 
 type Props = {

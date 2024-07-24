@@ -1,6 +1,6 @@
 import Header from "@/components/Header";
 import List from "@/components/List";
-import Fetch from "@/lib/Fetch";
+import { FetchDeezer } from "@/lib/Fetch";
 import { type Track } from "@/types/Track";
 import { Metadata } from "next";
 
@@ -12,11 +12,11 @@ async function getData(id: string): Promise<{
 	name: string,
 	picture_big: string
 }> {
-	return await Fetch(`editorial/${id}`);
+	return await FetchDeezer(`editorial/${id}`);
 }
 
 async function getTracks(id: string): Promise<{ tracks: { data: Track[] } }> {
-	return await Fetch(`editorial/${id}/charts?limit=100`);
+	return await FetchDeezer(`editorial/${id}/charts?limit=100`);
 }
 
 type Props = {

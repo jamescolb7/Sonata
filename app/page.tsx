@@ -3,7 +3,7 @@ import List from "@/components/List";
 import { Track } from '@/types/Track';
 import { Title, Muted } from "@/components/Text";
 import { Separator } from "@/components/ui/separator";
-import Fetch from "@/lib/Fetch";
+import { FetchDeezer } from "@/lib/Fetch";
 import Link from "next/link";
 
 interface Rows {
@@ -25,11 +25,11 @@ interface Chart {
 }
 
 async function getPopular(): Promise<Playlist> {
-  return Fetch('playlist/3155776842');
+  return FetchDeezer('playlist/3155776842');
 }
 
 async function getChart(): Promise<Chart> {
-  return Fetch('chart');
+  return FetchDeezer('chart');
 }
 
 export default async function Home() {
