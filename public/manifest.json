@@ -1,8 +1,8 @@
 {
 	"name": "Sonata",
 	"short_name": "Sonata",
-	"theme_color": "#020817",
-	"background_color": "#020817",
+	"theme_color": "#09090b",
+	"background_color": "#09090b",
 	"display": "standalone",
 	"orientation": "portrait",
 	"scope": "/",
