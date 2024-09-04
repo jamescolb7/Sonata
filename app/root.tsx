@@ -9,6 +9,7 @@ import LayoutContent from './components/layout';
 import '@fontsource-variable/inter/index.css';
 import "./tailwind.css";
 import { Provider } from "jotai";
+import ProgressBar from './components/progress'
 
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
@@ -20,6 +21,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Links />
       </head>
       <body className="dark min-h-screen bg-background antialiased">
+        <ProgressBar />
         <Provider>
           <div className="flex flex-row">
             <LayoutContent>

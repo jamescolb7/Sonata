@@ -43,6 +43,7 @@ function PlaylistModal({ open, set, player }: PlaylistModalProps) {
 
   useEffect(() => {
     const getData = async () => {
+      return
       const res = await fetch(`/api/playlists/list`);
       if (res.status !== 200) return;
       const json = await res.json();

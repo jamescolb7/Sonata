@@ -6,7 +6,7 @@ export const artist = sqliteTable("Artist", {
   name: text("name").notNull(),
   pictureBig: text("picture_big").notNull(),
   createdAt: numeric("createdAt").default(sql`(CURRENT_TIMESTAMP)`).notNull(),
-  updatedAt: numeric("updatedAt").notNull(),
+  updatedAt: numeric("updatedAt").default(sql`(CURRENT_TIMESTAMP)`).notNull(),
 },
   (table) => {
     return {
@@ -22,7 +22,7 @@ export const album = sqliteTable("Album", {
   coverMedium: text("cover_medium").notNull(),
   coverSmall: text("cover_small").notNull(),
   createdAt: numeric("createdAt").default(sql`(CURRENT_TIMESTAMP)`).notNull(),
-  updatedAt: numeric("updatedAt").notNull(),
+  updatedAt: numeric("updatedAt").default(sql`(CURRENT_TIMESTAMP)`).notNull(),
 },
   (table) => {
     return {
@@ -39,7 +39,7 @@ export const track = sqliteTable("Track", {
   preview: text("preview"),
   type: text("type").notNull(),
   createdAt: numeric("createdAt").default(sql`(CURRENT_TIMESTAMP)`).notNull(),
-  updatedAt: numeric("updatedAt").notNull(),
+  updatedAt: numeric("updatedAt").default(sql`(CURRENT_TIMESTAMP)`).notNull(),
 },
   (table) => {
     return {
@@ -59,7 +59,7 @@ export const user = sqliteTable("User", {
   email: text("email").notNull(),
   hashedPassword: text("hashed_password").notNull(),
   createdAt: numeric("createdAt").default(sql`(CURRENT_TIMESTAMP)`).notNull(),
-  updatedAt: numeric("updatedAt").notNull(),
+  updatedAt: numeric("updatedAt").default(sql`(CURRENT_TIMESTAMP)`).notNull(),
 },
   (table) => {
     return {
@@ -72,7 +72,7 @@ export const liked = sqliteTable("Liked", {
   userId: text("userId").notNull().references(() => user.id, { onDelete: "cascade", onUpdate: "cascade" }),
   trackId: text("trackId").notNull().references(() => track.id, { onDelete: "restrict", onUpdate: "cascade" }),
   createdAt: numeric("createdAt").default(sql`(CURRENT_TIMESTAMP)`).notNull(),
-  updatedAt: numeric("updatedAt").notNull(),
+  updatedAt: numeric("updatedAt").default(sql`(CURRENT_TIMESTAMP)`).notNull(),
 },
   (table) => {
     return {
@@ -85,7 +85,7 @@ export const history = sqliteTable("History", {
   userId: text("userId").notNull().references(() => user.id, { onDelete: "cascade", onUpdate: "cascade" }),
   trackId: text("trackId").notNull().references(() => track.id, { onDelete: "restrict", onUpdate: "cascade" }),
   createdAt: numeric("createdAt").default(sql`(CURRENT_TIMESTAMP)`).notNull(),
-  updatedAt: numeric("updatedAt").notNull(),
+  updatedAt: numeric("updatedAt").default(sql`(CURRENT_TIMESTAMP)`).notNull(),
 },
   (table) => {
     return {
@@ -98,7 +98,7 @@ export const playlists = sqliteTable("Playlists", {
   name: text("name").notNull(),
   userId: text("userId").notNull().references(() => user.id, { onDelete: "cascade", onUpdate: "cascade" }),
   createdAt: numeric("createdAt").default(sql`(CURRENT_TIMESTAMP)`).notNull(),
-  updatedAt: numeric("updatedAt").notNull(),
+  updatedAt: numeric("updatedAt").default(sql`(CURRENT_TIMESTAMP)`).notNull(),
 },
   (table) => {
     return {
@@ -112,7 +112,7 @@ export const playlistTracks = sqliteTable("PlaylistTracks", {
   playlistId: text("playlistId").notNull().references(() => playlists.id, { onDelete: "cascade", onUpdate: "cascade" }),
   trackId: text("trackId").notNull().references(() => track.id, { onDelete: "restrict", onUpdate: "cascade" }),
   createdAt: numeric("createdAt").default(sql`(CURRENT_TIMESTAMP)`).notNull(),
-  updatedAt: numeric("updatedAt").notNull(),
+  updatedAt: numeric("updatedAt").default(sql`(CURRENT_TIMESTAMP)`).notNull(),
 },
   (table) => {
     return {

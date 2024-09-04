@@ -6,7 +6,7 @@ CREATE TABLE `Album` (
 	`cover_medium` text NOT NULL,
 	`cover_small` text NOT NULL,
 	`createdAt` numeric DEFAULT (CURRENT_TIMESTAMP) NOT NULL,
-	`updatedAt` numeric NOT NULL,
+	`updatedAt` numeric DEFAULT (CURRENT_TIMESTAMP) NOT NULL,
 	FOREIGN KEY (`artistId`) REFERENCES `Artist`(`id`) ON UPDATE cascade ON DELETE set null
 );
 --> statement-breakpoint
@@ -15,7 +15,7 @@ CREATE TABLE `Artist` (
 	`name` text NOT NULL,
 	`picture_big` text NOT NULL,
 	`createdAt` numeric DEFAULT (CURRENT_TIMESTAMP) NOT NULL,
-	`updatedAt` numeric NOT NULL
+	`updatedAt` numeric DEFAULT (CURRENT_TIMESTAMP) NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE `History` (
@@ -23,7 +23,7 @@ CREATE TABLE `History` (
 	`userId` text NOT NULL,
 	`trackId` text NOT NULL,
 	`createdAt` numeric DEFAULT (CURRENT_TIMESTAMP) NOT NULL,
-	`updatedAt` numeric NOT NULL,
+	`updatedAt` numeric DEFAULT (CURRENT_TIMESTAMP) NOT NULL,
 	FOREIGN KEY (`userId`) REFERENCES `User`(`id`) ON UPDATE cascade ON DELETE cascade,
 	FOREIGN KEY (`trackId`) REFERENCES `Track`(`id`) ON UPDATE cascade ON DELETE restrict
 );
@@ -33,7 +33,7 @@ CREATE TABLE `Liked` (
 	`userId` text NOT NULL,
 	`trackId` text NOT NULL,
 	`createdAt` numeric DEFAULT (CURRENT_TIMESTAMP) NOT NULL,
-	`updatedAt` numeric NOT NULL,
+	`updatedAt` numeric DEFAULT (CURRENT_TIMESTAMP) NOT NULL,
 	FOREIGN KEY (`userId`) REFERENCES `User`(`id`) ON UPDATE cascade ON DELETE cascade,
 	FOREIGN KEY (`trackId`) REFERENCES `Track`(`id`) ON UPDATE cascade ON DELETE restrict
 );
@@ -43,7 +43,7 @@ CREATE TABLE `PlaylistTracks` (
 	`playlistId` text NOT NULL,
 	`trackId` text NOT NULL,
 	`createdAt` numeric DEFAULT (CURRENT_TIMESTAMP) NOT NULL,
-	`updatedAt` numeric NOT NULL,
+	`updatedAt` numeric DEFAULT (CURRENT_TIMESTAMP) NOT NULL,
 	FOREIGN KEY (`playlistId`) REFERENCES `Playlists`(`id`) ON UPDATE cascade ON DELETE cascade,
 	FOREIGN KEY (`trackId`) REFERENCES `Track`(`id`) ON UPDATE cascade ON DELETE restrict
 );
@@ -53,7 +53,7 @@ CREATE TABLE `Playlists` (
 	`name` text NOT NULL,
 	`userId` text NOT NULL,
 	`createdAt` numeric DEFAULT (CURRENT_TIMESTAMP) NOT NULL,
-	`updatedAt` numeric NOT NULL,
+	`updatedAt` numeric DEFAULT (CURRENT_TIMESTAMP) NOT NULL,
 	FOREIGN KEY (`userId`) REFERENCES `User`(`id`) ON UPDATE cascade ON DELETE cascade
 );
 --> statement-breakpoint
@@ -74,7 +74,7 @@ CREATE TABLE `Track` (
 	`preview` text,
 	`type` text NOT NULL,
 	`createdAt` numeric DEFAULT (CURRENT_TIMESTAMP) NOT NULL,
-	`updatedAt` numeric NOT NULL,
+	`updatedAt` numeric DEFAULT (CURRENT_TIMESTAMP) NOT NULL,
 	FOREIGN KEY (`artistId`) REFERENCES `Artist`(`id`) ON UPDATE cascade ON DELETE set null,
 	FOREIGN KEY (`albumId`) REFERENCES `Album`(`id`) ON UPDATE cascade ON DELETE set null
 );
@@ -84,7 +84,7 @@ CREATE TABLE `User` (
 	`email` text NOT NULL,
 	`hashed_password` text NOT NULL,
 	`createdAt` numeric DEFAULT (CURRENT_TIMESTAMP) NOT NULL,
-	`updatedAt` numeric NOT NULL
+	`updatedAt` numeric DEFAULT (CURRENT_TIMESTAMP) NOT NULL
 );
 --> statement-breakpoint
 CREATE UNIQUE INDEX `Album_id_key` ON `Album` (`id`);--> statement-breakpoint

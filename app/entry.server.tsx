@@ -13,6 +13,8 @@ import { isbot } from "isbot";
 import { renderToPipeableStream } from "react-dom/server";
 import { createExpressApp } from 'remix-create-express-app'
 import morgan from "morgan";
+import ValidateCors from "./server/cors";
+import AuthMiddleware from "./server/auth";
 
 const ABORT_DELAY = 5_000;
 
@@ -147,9 +149,14 @@ export const app = createExpressApp({
       app.use(morgan('tiny'));
       app.disable('x-powered-by');
     }
+
+    app.use(ValidateCors);
+    app.use(AuthMiddleware);
   },
   getLoadContext: () => {
-    return {};
+    return {
+      username: "test"
+    };
   },
   unstable_middleware: true,
 })

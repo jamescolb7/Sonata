@@ -76,3 +76,28 @@ body {
 .primary-font {
   font-family: 'Atkinson Hyperlegible', sans-serif;
 }
+
+.blurred {
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  filter: blur(50px) saturate(50%);
+  height: 256px;
+  width: 100vw;
+  overflow: auto;
+  user-drag: none;
+  -webkit-user-drag: none;
+  user-select: none;
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+}
+
+.noselect_image {
+  user-drag: none;
+  -webkit-user-drag: none;
+  user-select: none;
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+}
