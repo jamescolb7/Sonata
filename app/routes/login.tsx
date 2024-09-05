@@ -11,7 +11,6 @@ import { Muted } from "~/components/text";
 import { generateId } from 'lucia';
 import { hash, verify } from "@node-rs/argon2";
 import { lucia } from "~/lib/auth";
-import { createCookie, json } from "@remix-run/node";
 
 export default function Login() {
   const blocker = useBlocker(({ currentLocation, nextLocation }) => currentLocation.pathname !== nextLocation.pathname)
@@ -23,7 +22,7 @@ export default function Login() {
       <div className="lg:p-8">
         <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]">
           <div className="flex flex-col space-y-2 text-center">
-            <h1 className="text-2xl font-semibold tracking-tight">
+            <h1 className="primary-font text-2xl font-semibold tracking-tight">
               Log in
             </h1>
             <p className="text-sm text-muted-foreground">
@@ -64,7 +63,7 @@ export default function Login() {
                 </Button>
               </div>
             </Form>
-            {formResData && <Muted>{formResData.error}</Muted>}
+            {formResData && <Muted>Error: {formResData.error}</Muted>}
             {/* {signupAllowed === "false" && <Muted>Signups have been disabled on this instance.</Muted>} */}
           </div>
         </div>
@@ -96,8 +95,6 @@ export async function action({
     where: eq(user.email, email)
   })
 
-  console.log(existingUser);
-
   if (!existingUser) {
     //Create user
 
@@ -123,7 +120,9 @@ export async function action({
     cookieHeaders.append('Set-Cookie', sessionCookie.serialize())
     cookieHeaders.append('Location', '/');
 
-    return json({ error: "" }, { headers: cookieHeaders });
+    return redirect("/", {
+      headers: cookieHeaders
+    })
   } else {
     //Login user
 
@@ -146,6 +145,8 @@ export async function action({
     cookieHeaders.append('Set-Cookie', lucia.createSessionCookie(session.id).serialize())
     cookieHeaders.append('Location', '/');
 
-    return json({ error: "" }, { headers: cookieHeaders });
+    return redirect("/", {
+      headers: cookieHeaders
+    })
   }
 }
