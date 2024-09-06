@@ -3,7 +3,7 @@ import { Label } from "~/components/ui/label"
 import { Input } from "~/components/ui/input"
 import { Button } from "~/components/ui/button"
 import { Form } from '@remix-run/react';
-import { ActionFunctionArgs, redirect } from "@remix-run/node";
+import { ActionFunctionArgs, MetaFunction, redirect } from "@remix-run/node";
 import { db } from "drizzle/db";
 import { eq } from "drizzle-orm";
 import { user } from "drizzle/schema";
@@ -11,6 +11,13 @@ import { Muted } from "~/components/text";
 import { generateId } from 'lucia';
 import { hash, verify } from "@node-rs/argon2";
 import { lucia } from "~/lib/auth";
+
+export const meta: MetaFunction = () => {
+  return [
+    { title: "Login - Sonata" },
+    { name: "description", content: "Your self-hosted music streaming platform." },
+  ];
+};
 
 export default function Login() {
   const blocker = useBlocker(({ currentLocation, nextLocation }) => currentLocation.pathname !== nextLocation.pathname)

@@ -10,7 +10,7 @@ import { Separator } from "~/components/ui/separator";
 export const meta: MetaFunction = () => {
   return [
     { title: "Home - Sonata" },
-    // { name: "description", content: "Welcome to Remix!" },
+    { name: "description", content: "Your self-hosted music streaming platform." },
   ];
 };
 

@@ -11,6 +11,11 @@ import "./tailwind.css";
 import { Provider } from "jotai";
 import ProgressBar from './components/progress'
 
+import { getAuth } from "./middleware/middlewareAuth";
+import { serverOnly$ } from 'vite-env-only/macros';
+
+export const middleware = serverOnly$([getAuth]);
+
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
