@@ -14,6 +14,8 @@ import { renderToPipeableStream } from "react-dom/server";
 import { createExpressApp } from 'remix-create-express-app'
 import morgan from "morgan";
 import ValidateCors from "./server/cors";
+import StreamRoute from "./server/stream";
+import { init as deezerPluginInit } from "./server/plugins/deezer";
 
 const ABORT_DELAY = 5_000;
 
@@ -144,12 +146,16 @@ function handleBrowserRequest(
 
 export const app = createExpressApp({
   configure: app => {
+    deezerPluginInit();
+
     if (process.env.NODE_ENV !== "development") {
       app.use(morgan('tiny'));
       app.disable('x-powered-by');
     }
 
     app.use(ValidateCors);
+
+    app.get('/api/stream/:plugin/:id', StreamRoute);
   },
 
   unstable_middleware: true,
