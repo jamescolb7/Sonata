@@ -1,4 +1,4 @@
-import { LoaderFunctionArgs } from "@remix-run/node";
+import { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
 import { Link, useLoaderData } from "@remix-run/react";
 import { eq } from "drizzle-orm";
 import { db } from "drizzle/db";
@@ -8,12 +8,19 @@ import { Muted, Title } from "~/components/text";
 import { Separator } from "~/components/ui/separator";
 import { UserContext } from "~/middleware/middlewareAuth";
 
+export const meta: MetaFunction = () => {
+    return [
+      { title: "Library - Sonata" },
+      { name: "description", content: "Your self-hosted music streaming platform." },
+    ];
+  };
+
 export async function loader({ context }: LoaderFunctionArgs) {
     const ctx = context as Record<string, any>;
     const userData = ctx.get(UserContext);
 
     const likedData = await db.query.liked.findMany({
-        limit: 7,
+        limit: 6,
         with: {
             track: {
                 with: {
@@ -68,7 +75,7 @@ export default function Library() {
                         {data.history.map((item, index) => {
                             return (
                                 <Link to={`/track/${item.trackId}`} key={index}>
-                                    <ScrollCard title={item.track.title} image={item.track.album?.coverMedium} subtitle={item.track.artist?.name} width={220} height={220}></ScrollCard>
+                                    <ScrollCard title={item.track.title} image={item.track.album?.cover_medium} subtitle={item.track.artist?.name} width={220} height={220}></ScrollCard>
                                 </Link>
                             )
                         })}
@@ -80,13 +87,13 @@ export default function Library() {
                     <Separator className="my-4" />
                     <CardCollection>
                         {!data.liked.length && <Muted className="text-center">Like some songs and they will appear here.</Muted>}
-                        {data.liked.length !== 0 && <Link to={`/library/liked`}>
+                        {data.liked.length !== 0 && <Link to={`/liked`}>
                             <ScrollCard title="View All" image="/arrow.png" subtitle="Show your liked songs" width={220} height={220}></ScrollCard>
                         </Link>}
                         {data.liked.map((item, index) => {
                             return (
                                 <Link to={`/track/${item.trackId}`} key={index}>
-                                    <ScrollCard title={item.track.title} image={item.track.album?.coverMedium} subtitle={item.track.artist?.name} width={220} height={220}></ScrollCard>
+                                    <ScrollCard title={item.track.title} image={item.track.album?.cover_medium} subtitle={item.track.artist?.name} width={220} height={220}></ScrollCard>
                                 </Link>
                             )
                         })}
