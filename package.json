@@ -4,8 +4,8 @@
   "sideEffects": false,
   "type": "module",
   "scripts": {
-    "build": "remix vite:build",
-    "build:prod": "npm run migrate && remix vite:build",
+    "build": "npm run migrate && remix vite:build",
+    "build:dev": "remix vite:build",
     "dev": "vite",
     "lint": "eslint --ignore-path .gitignore --cache --cache-location ./node_modules/.cache/eslint .",
     "start": "cross-env NODE_ENV=production node ./build/server/index.js",
