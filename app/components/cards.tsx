@@ -38,8 +38,8 @@ export function Card({
         </Image>
       </div>
       <div className="space-y-1 text-sm overflow-hidden">
-        <h3 className="font-medium leading-none">{title}</h3>
-        <p className="text-xs text-muted-foreground">{subtitle || "Artist"}</p>
+        <h3 className="font-medium leading-none line-clamp-2">{title}</h3>
+        <p className="text-xs text-muted-foreground line-clamp-1">{subtitle || "Artist"}</p>
       </div>
     </div>
   )
