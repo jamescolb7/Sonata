@@ -1,7 +1,14 @@
-import { LoaderFunctionArgs } from "@remix-run/node";
+import { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 import { Muted, Title } from "~/components/text";
 import { UserContext } from "~/middleware/middlewareAuth";
+
+export const meta: MetaFunction = () => {
+    return [
+      { title: "User - Sonata" },
+      { name: "description", content: "Your self-hosted music streaming platform." },
+    ];
+  };
 
 export function loader({ context }: LoaderFunctionArgs) {
     const ctx = context as Record<string, any>;

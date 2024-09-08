@@ -1,12 +1,12 @@
 import { json, LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
 import { ClientLoaderFunctionArgs } from "@remix-run/react";
 import { cacheClientLoader, useCachedLoaderData } from "remix-client-cache";
-import { type Track } from "types/Track";
+import { type Album } from "types/Album";
 import Header from "~/components/header";
 import List from "~/components/list";
 
 export const meta: MetaFunction = ({ data }) => {
-  const title = (data as Track).title;
+  const title = (data as Album).title;
 
   return [
     { title: `${title} - Sonata` },
@@ -17,18 +17,19 @@ export const meta: MetaFunction = ({ data }) => {
 export const clientLoader = (args: ClientLoaderFunctionArgs) => cacheClientLoader(args);
 
 export async function loader({ params }: LoaderFunctionArgs) {
-  const track = await fetch(`https://api.deezer.com/track/${params.id}`);
-  const data = await track.json() as Track;
-  return json(data);
+  const album = await fetch(`https://api.deezer.com/album/${params.id}`);
+  const albumData = await album.json() as Album;
+
+  return json(albumData);
 }
 
-export default function Track() {
-  const track = useCachedLoaderData<typeof loader>();
+export default function Album() {
+  const album = useCachedLoaderData<typeof loader>();
 
   return (
     <>
-      <Header tracks={[track]} img={track.album.cover_big} title={track.title} type="Track" subtitle={track.artist.name}></Header>
-      <List data={[track]}></List>
+      <Header tracks={album.tracks.data} img={album.cover_big} title={album.title} type="Album" subtitle={album.artist.name}></Header>
+      <List data={album.tracks.data}></List>
     </>
   )
 }
