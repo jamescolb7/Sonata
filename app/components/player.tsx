@@ -184,7 +184,7 @@ export default function Player({
     playerElem?.addEventListener('pause', () => setPaused(true));
 
     if (player.id) {
-      fetch(`/api/me/liked/${player.id}`).then(res => res.json()).then((data: { liked: boolean }) => {
+      fetch(`/api/liked/${player.id}`).then(res => res.json()).then((data: { liked: boolean }) => {
         if (data.liked) {
           setLiked(true);
         } else {

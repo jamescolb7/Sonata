@@ -17,6 +17,8 @@ import ValidateCors from "./server/cors";
 import StreamRoute from "./server/stream";
 import { init as deezerPluginInit } from "./server/plugins/deezer";
 import ImageRoute from "./server/image";
+import AuthMiddleware from "./server/middleware/auth";
+import Actions from './server/actions';
 
 const ABORT_DELAY = 5_000;
 
@@ -155,9 +157,11 @@ export const app = createExpressApp({
     }
 
     app.use(ValidateCors);
+    app.use('/api', AuthMiddleware);
 
     app.get('/image', ImageRoute);
     app.get('/api/stream/:plugin/:id', StreamRoute);
+    app.use('/api', Actions)
   },
 
   unstable_middleware: true,

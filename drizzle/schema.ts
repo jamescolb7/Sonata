@@ -4,7 +4,7 @@ import { sql } from "drizzle-orm"
 export const artist = sqliteTable("Artist", {
   id: text("id").primaryKey().notNull(),
   name: text("name").notNull(),
-  pictureBig: text("picture_big").notNull(),
+  picture_big: text("picture_big").notNull(),
   createdAt: numeric("createdAt").default(sql`(CURRENT_TIMESTAMP)`).notNull(),
   updatedAt: numeric("updatedAt").default(sql`(CURRENT_TIMESTAMP)`).notNull(),
 },

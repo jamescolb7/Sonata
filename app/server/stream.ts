@@ -2,18 +2,11 @@ import { Request, Response } from "express";
 import DeezerDownload from "./plugins/deezer";
 import fs from 'fs';
 import os from 'os';
-import { lucia } from "~/lib/auth";
 
 const temp = os.tmpdir();
 export const path = `${temp}/SonataServer`
 
 export default async function StreamRoute(req: Request, res: Response) {
-    //Auth validation as middleware is skipped
-    const sessionId = lucia.readSessionCookie(req.headers.cookie ?? "");
-    if (!sessionId) return res.sendStatus(401);
-    const { session } = await lucia.validateSession(sessionId);
-    if (!session) return res.sendStatus(401);
-
     const id = req.params.id.split('.')[0];
     if (isNaN(Number(id))) return res.sendStatus(400);
 
