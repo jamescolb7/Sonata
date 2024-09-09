@@ -3,6 +3,7 @@ import { Muted } from "./text"
 import { PlayerAtom, QueueAtom, QueueIndexAtom } from "~/lib/state";
 import { formatTime } from "~/lib/utils";
 import { Track } from "types/Track";
+import Image from "./image";
 
 export default function List({ data }: { data: Track[] }) {
     const setPlayer = useSetAtom(PlayerAtom);
@@ -20,7 +21,7 @@ export default function List({ data }: { data: Track[] }) {
             {data.map((track, i) => {
                 return (
                     <div onClick={() => playTrack(i)} className="flex gap-x-2 p-2 rounded-lg cursor-pointer transition-colors hover:bg-zinc-800" key={i}>
-                        <img className="rounded-sm w-[50px]" src={track.album.cover_small}></img>
+                        <Image className="rounded-sm w-[50px]" src={track.album.cover_small}></Image>
                         <div className="w-full">
                             <h3 className="text-lg primary-font line-clamp-1">{track.title}</h3>
                             <Muted className="line-clamp-1">{track.artist.name}</Muted>

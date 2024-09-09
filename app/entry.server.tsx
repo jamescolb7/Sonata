@@ -16,6 +16,7 @@ import morgan from "morgan";
 import ValidateCors from "./server/cors";
 import StreamRoute from "./server/stream";
 import { init as deezerPluginInit } from "./server/plugins/deezer";
+import ImageRoute from "./server/image";
 
 const ABORT_DELAY = 5_000;
 
@@ -155,6 +156,7 @@ export const app = createExpressApp({
 
     app.use(ValidateCors);
 
+    app.get('/image', ImageRoute);
     app.get('/api/stream/:plugin/:id', StreamRoute);
   },
 
