@@ -6,6 +6,8 @@ import { json, redirect } from '@remix-run/node';
 
 export const UserContext = createContext<User | null>();
 
+const guestsAllowed = process.env.GUESTS_ALLOWED ?? false;
+
 export async function getAuth({ request, context, next }: MiddlewareFunctionArgs) {
   const sessionCookie = request.headers.get('Cookie');
 
@@ -15,9 +17,12 @@ export async function getAuth({ request, context, next }: MiddlewareFunctionArgs
     context.set(UserContext, null);
 
     const path = new URL(request.url).pathname;
+    let allowedPaths = ['/login', '/assets/', '/public/', '/favicon.ico']
+
+    if (guestsAllowed) allowedPaths.push('/track/', '/album/', '/artist/');
 
     //Login page
-    let guestPath = ['/track/', '/album/', '/artist/', '/login', '/assets/', '/public/', '/favicon.ico'].findIndex(p => {
+    let guestPath = allowedPaths.findIndex(p => {
       return path.startsWith(p);
     })
 

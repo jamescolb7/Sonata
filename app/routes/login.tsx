@@ -19,6 +19,8 @@ export const meta: MetaFunction = () => {
   ];
 };
 
+const signupsAllowed = process.env.SIGNUPS_ALLOWED ?? false;
+
 export default function Login() {
   const blocker = useBlocker(({ currentLocation, nextLocation }) => currentLocation.pathname !== nextLocation.pathname)
 
@@ -51,6 +53,7 @@ export default function Login() {
                     autoCapitalize="none"
                     autoComplete="off"
                     autoCorrect="off"
+                    required
                   />
                   <Label className="sr-only" htmlFor="password">
                     Password
@@ -63,6 +66,7 @@ export default function Login() {
                     autoCapitalize="none"
                     autoComplete="off"
                     autoCorrect="off"
+                    required
                   />
                 </div>
                 <Button>
@@ -70,8 +74,8 @@ export default function Login() {
                 </Button>
               </div>
             </Form>
-            {formResData && <Muted>Error: {formResData.error}</Muted>}
-            {/* {signupAllowed === "false" && <Muted>Signups have been disabled on this instance.</Muted>} */}
+            {formResData && <Muted className="font-bold animate-pulse">Error: {formResData.error}</Muted>}
+            {!signupsAllowed && <Muted>Note: Account creation has been disabled on this instance.</Muted>}
           </div>
         </div>
       </div>
@@ -104,6 +108,10 @@ export async function action({
 
   if (!existingUser) {
     //Create user
+
+    if (!signupsAllowed) return {
+      error: "Account creation has not been enabled. Please view the docs for more info."
+    }
 
     const userId = generateId(15);
 
