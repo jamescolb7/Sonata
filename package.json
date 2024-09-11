@@ -4,11 +4,11 @@
   "sideEffects": false,
   "type": "module",
   "scripts": {
-    "build": "npm run migrate && remix vite:build",
-    "build:dev": "remix vite:build",
+    "build": "remix vite:build",
     "dev": "cross-env NODE_OPTIONS=--openssl-legacy-provider vite",
     "lint": "eslint --ignore-path .gitignore --cache --cache-location ./node_modules/.cache/eslint .",
     "start": "cross-env NODE_OPTIONS=--openssl-legacy-provider NODE_ENV=production node ./build/server/index.js",
+    "prod:start" : "npm run migrate && cross-env NODE_OPTIONS=--openssl-legacy-provider NODE_ENV=production node ./build/server/index.js",
     "generate": "drizzle-kit generate",
     "migrate": "drizzle-kit migrate",
     "typecheck": "tsc"
