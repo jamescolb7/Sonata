@@ -75,7 +75,6 @@ export default function Login() {
               </div>
             </Form>
             {formResData && <Muted className="font-bold animate-pulse">Error: {formResData.error}</Muted>}
-            {!signupsAllowed && <Muted>Note: Account creation has been disabled on this instance.</Muted>}
           </div>
         </div>
       </div>
@@ -110,7 +109,7 @@ export async function action({
     //Create user
 
     if (!signupsAllowed) return {
-      error: "Account creation has not been enabled. Please view the docs for more info."
+      error: "Invalid email or password"
     }
 
     const userId = generateId(15);
