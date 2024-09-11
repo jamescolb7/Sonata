@@ -19,7 +19,7 @@ export const meta: MetaFunction = () => {
   ];
 };
 
-const signupsAllowed = process.env.SIGNUPS_ALLOWED ?? false;
+const signupsAllowed = process.env.SIGNUPS_ALLOWED || "false";
 
 export default function Login() {
   const blocker = useBlocker(({ currentLocation, nextLocation }) => currentLocation.pathname !== nextLocation.pathname)
@@ -107,9 +107,10 @@ export async function action({
 
   if (!existingUser) {
     //Create user
+    console.log(signupsAllowed)
 
-    if (!signupsAllowed) return {
-      error: "Invalid email or password"
+    if (signupsAllowed !== "true") return {
+      error: "Account creation has not been enabled. Please view the docs for more info."
     }
 
     const userId = generateId(15);
