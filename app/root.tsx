@@ -22,6 +22,12 @@ export function Layout({ children }: { children: React.ReactNode }) {
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link href="/manifest.json" rel="manifest"></link>
+        <link rel="shortcut icon" type="image/png" href="/icons/logo.png" />
+        <link rel="apple-touch-icon" href="/icons/logo.png" />
+        <meta name="mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-title" content="Sonata" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
         <Meta />
         <Links />
       </head>
