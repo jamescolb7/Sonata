@@ -1,6 +1,6 @@
 import { and, eq } from 'drizzle-orm';
 import { db } from 'drizzle/db';
-import { history, liked } from 'drizzle/schema';
+import { history, liked, track } from 'drizzle/schema';
 import express, { Request, Response } from 'express';
 import { GetTrack } from './data/track';
 
@@ -32,6 +32,36 @@ router.get('/liked/:id', async (req: Request, res: Response) => {
         })
     } catch (e) {
         console.log(e);
+    }
+})
+
+router.get('/like/:id', async (req, res) => {
+    if (!req.params.id || isNaN(Number(req.params.id))) return res.sendStatus(400);
+    const likedData = await db.query.liked.findFirst({
+        where: and(eq(liked.trackId, req.params.id), eq(liked.userId, res.locals.user.id)),
+        with: {
+            track: true
+        }
+    })
+
+    if (likedData) {
+        //Remove from liked
+        await db.delete(liked).where(and(eq(liked.trackId, req.params.id), eq(liked.userId, res.locals.user.id)));
+        return res.sendStatus(200);
+    } else {
+        //Add to liked
+        const trackData = await db.query.track.findFirst({
+            where: eq(track.id, req.params.id)
+        });
+
+        if (!trackData) return res.sendStatus(404);
+
+        await db.insert(liked).values({
+            trackId: trackData.id,
+            userId: res.locals.user.id
+        });
+
+        return res.sendStatus(201);
     }
 })
 

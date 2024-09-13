@@ -149,7 +149,7 @@ export default function Player({
 
   const like = async () => {
     if (!player.id) return;
-    await fetch(`/api/me/like/${player.id}`);
+    await fetch(`/api/like/${player.id}`);
     setLiked(!liked);
   }
 
