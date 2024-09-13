@@ -31,8 +31,9 @@ export async function GetTrack(id: string): Promise<any> {
                 title: data.album.title,
                 cover_big: data.album.cover_big,
                 cover_medium: data.album.cover_medium,
-                cover_small: data.album.cover_small
-            })
+                cover_small: data.album.cover_small,
+                artistId: String(data.artist.id)
+            }).onConflictDoNothing();
 
             const d = await db.insert(track).values({
                 id: String(data.id),

@@ -50,9 +50,7 @@ router.get('/like/:id', async (req, res) => {
         return res.sendStatus(200);
     } else {
         //Add to liked
-        const trackData = await db.query.track.findFirst({
-            where: eq(track.id, req.params.id)
-        });
+        const trackData = await GetTrack(req.params.id).catch(() => { });
 
         if (!trackData) return res.sendStatus(404);
 
