@@ -63,4 +63,24 @@ router.get('/like/:id', async (req, res) => {
     }
 })
 
+router.get('/lyrics/:id', async (req, res) => {
+    if (!req.params.id || isNaN(Number(req.params.id))) return res.sendStatus(400);
+
+    const track = await GetTrack(req.params.id);
+    if (!track) return res.sendStatus(400);
+
+    const data = await fetch(`https://lrclib.net/api/get?artist_name=${encodeURI(track.artist.name)}&track_name=${encodeURI(track.title)}&album_name=${encodeURI(track.album.title)}&duration=${track.duration}`, {
+        headers: {
+            "user-agent": "Sonata v1.0.0 (https://github.com/directlycrazy/Sonata)"
+        }
+    });
+
+    try {
+        const json = await data.json();
+        return res.send(json);
+    } catch (e) {
+        return res.sendStatus(404);
+    }
+})
+
 export default router;

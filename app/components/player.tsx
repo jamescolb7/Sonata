@@ -20,7 +20,7 @@ import { Label } from "./ui/label"
 import { RadioGroup, RadioGroupItem } from "./ui/radio-group"
 import { Button } from "./ui/button";
 import { Track } from "types/Track";
-// import Lyrics from './lyrics';
+import Lyrics from './lyrics';
 
 const pad = (num: number) => num.toString().padStart(2, "0");
 
@@ -315,7 +315,7 @@ export default function Player({
         </div>
       </div>
       <PlaylistModal player={player} open={playlistDialogOpen} set={setPlaylistDialogOpen} />
-      {/* <Lyrics player={player} open={lyricsDialogOpen} set={setLyricsDialogOpen} /> */}
+      <Lyrics player={player} open={lyricsDialogOpen} set={setLyricsDialogOpen} />
       <audio ref={playerRef} onEnded={skip} src={playerUrl ?? ""} autoPlay></audio>
     </>
   )
