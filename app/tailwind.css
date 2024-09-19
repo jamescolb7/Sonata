@@ -69,6 +69,10 @@
   }
 }
 
+:root {
+  color-scheme: dark;
+}
+
 body {
   font-family: 'Inter Variable', sans-serif;
 }
