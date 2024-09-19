@@ -10,10 +10,10 @@ import { UserContext } from "~/middleware/middlewareAuth";
 
 export const meta: MetaFunction = () => {
     return [
-      { title: "Library - Sonata" },
-      { name: "description", content: "Your self-hosted music streaming platform." },
+        { title: "Library - Sonata" },
+        { name: "description", content: "Your self-hosted music streaming platform." },
     ];
-  };
+};
 
 export async function loader({ context }: LoaderFunctionArgs) {
     const ctx = context as Record<string, any>;
@@ -109,7 +109,7 @@ export default function Library() {
                         </div>
                         {data.playlists && data.playlists.map((item, index) => {
                             return (
-                                <Link to={`/library/playlist/${item.id}`} key={index}>
+                                <Link to={`/playlist/${item.id}`} key={index}>
                                     <ScrollCard title={item.name} image="/playlist.png" subtitle="Playlist" width={220} height={220}></ScrollCard>
                                 </Link>
                             )

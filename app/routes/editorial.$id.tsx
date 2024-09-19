@@ -34,7 +34,7 @@ export default function Editorial() {
 
     return (
         <>
-            <Header img={data.editorial.picture_big} title={data.editorial.name} type="Album" tracks={data.tracks.tracks.data}></Header>
+            <Header img={data.editorial.picture_big} title={data.editorial.name} type="Playlist" tracks={data.tracks.tracks.data}></Header>
             <List data={data.tracks.tracks.data}></List>
         </>
     )
