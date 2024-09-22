@@ -1,6 +1,6 @@
 import { and, eq } from 'drizzle-orm';
 import { db } from 'drizzle/db';
-import { history, liked, track } from 'drizzle/schema';
+import { history, liked, playlists, playlistTracks, track } from 'drizzle/schema';
 import express, { Request, Response } from 'express';
 import { GetTrack } from './data/track';
 
@@ -80,6 +80,56 @@ router.get('/lyrics/:id', async (req, res) => {
         return res.send(json);
     } catch (e) {
         return res.sendStatus(404);
+    }
+})
+
+//Playlist Controls
+
+router.get('/playlists/list', async (req, res) => {
+    const data = await db.query.playlists.findMany({
+        where: eq(playlists.userId, res.locals.user.id)
+    })
+
+    if (!data) return res.send([]);
+
+    return res.send(data);
+})
+
+router.get('/playlists/set/:id/:track', async (req, res) => {
+    if (!req.params.id || !req.params.track) return res.sendStatus(400);
+
+    const track = await GetTrack(req.params.track);
+    if (!track) return res.sendStatus(404);
+
+    const playlist = await db.query.playlists.findFirst({
+        where: and(eq(playlists.userId, res.locals.user.id), eq(playlists.id, req.params.id))
+    });
+    if (!playlist) return res.sendStatus(404);
+
+    try {
+        //Check if already in playlist
+        const exists = await db.query.playlistTracks.findFirst({
+            where: and(eq(playlistTracks.playlistId, req.params.id), eq(playlistTracks.trackId, req.params.track))
+        })
+
+        if (exists) {
+            //Remove from playlist
+            const data = await db.delete(playlistTracks).where(and(eq(playlistTracks.playlistId, req.params.id), eq(playlistTracks.trackId, req.params.track)));
+
+            if (data) return res.sendStatus(200);
+            return res.sendStatus(500);
+        } else {
+            //Add to playlist
+            const data = await db.insert(playlistTracks).values({
+                playlistId: req.params.id,
+                trackId: track.id
+            });
+
+            if (data) return res.sendStatus(201);
+        }
+
+    } catch (e) {
+        return res.sendStatus(500);
     }
 })
 
