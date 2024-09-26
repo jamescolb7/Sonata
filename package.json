@@ -8,7 +8,7 @@
     "dev": "cross-env NODE_OPTIONS=--openssl-legacy-provider vite",
     "lint": "eslint --ignore-path .gitignore --cache --cache-location ./node_modules/.cache/eslint .",
     "start": "cross-env NODE_OPTIONS=--openssl-legacy-provider NODE_ENV=production node ./build/server/index.js",
-    "prod:start" : "npm run migrate && cross-env NODE_OPTIONS=--openssl-legacy-provider NODE_ENV=production node ./build/server/index.js",
+    "prod:start": "npm run migrate && cross-env NODE_OPTIONS=--openssl-legacy-provider NODE_ENV=production node ./build/server/index.js",
     "generate": "drizzle-kit generate",
     "migrate": "drizzle-kit migrate",
     "typecheck": "tsc"
@@ -23,6 +23,7 @@
     "@radix-ui/react-label": "^2.1.0",
     "@radix-ui/react-radio-group": "^1.2.0",
     "@radix-ui/react-scroll-area": "^1.1.0",
+    "@radix-ui/react-select": "^2.1.1",
     "@radix-ui/react-separator": "^1.1.0",
     "@radix-ui/react-slider": "^1.2.0",
     "@radix-ui/react-slot": "^1.1.0",
