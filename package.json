@@ -48,6 +48,7 @@
     "jotai": "^2.9.3",
     "lucide-react": "^0.436.0",
     "morgan": "^1.10.0",
+    "nanoid": "^5.0.7",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "remix-client-cache": "^1.0.1",

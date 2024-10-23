@@ -3,6 +3,7 @@ import { db } from 'drizzle/db';
 import { history, liked, playlists, playlistTracks, track } from 'drizzle/schema';
 import express, { Request, Response } from 'express';
 import { GetTrack } from './data/track';
+import { nanoid } from 'nanoid';
 
 const router = express.Router();
 
@@ -128,6 +129,29 @@ router.get('/playlists/set/:id/:track', async (req, res) => {
             if (data) return res.sendStatus(201);
         }
 
+    } catch (e) {
+        return res.sendStatus(500);
+    }
+})
+
+router.get('/playlists/create/:name', async (req, res) => {
+    if (!req.params.name || req.params.name.length > 20) return res.sendStatus(400);
+
+    try {
+        //Check if a playlist exists with the same name
+        const existing = await db.query.playlists.findFirst({
+            where: and(eq(playlists.userId, res.locals.user.id), eq(playlists.name, req.params.name))
+        });
+
+        if (existing) return res.status(400).json({ "error": "Playlist with same name already exists" });
+
+        await db.insert(playlists).values({
+            id: nanoid(),
+            name: req.params.name,
+            userId: res.locals.user.id
+        });
+
+        return res.sendStatus(201);
     } catch (e) {
         return res.sendStatus(500);
     }
