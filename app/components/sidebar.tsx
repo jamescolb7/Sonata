@@ -1,8 +1,18 @@
-import React from "react";
-import { Button } from "./ui/button";
-import { CogIcon, LucideIcon, PlayCircleIcon, LayoutGrid, LibraryBig, CircleUserRound } from "lucide-react";
-import { cn } from '~/lib/utils';
+import { useEffect, useState } from "react";
+import { CogIcon, LucideIcon, PlayCircleIcon, LayoutGrid, LibraryBig, CircleUserRound, ChevronDown, ListMusic, Heart } from "lucide-react";
 import { Link, useMatches } from "@remix-run/react";
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarGroupLabel,
+  SidebarHeader,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+} from "./ui/sidebar"
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "./ui/collapsible";
 
 type LinksType = {
   name: string,
@@ -38,34 +48,86 @@ const links: LinksType[] = [
   }
 ]
 
-export default function Sidebar({
-  className
-}: React.HTMLAttributes<HTMLElement>) {
+export default function AppSidebar({ setOpen }: { setOpen: React.Dispatch<React.SetStateAction<boolean>> }) {
+  const [playlists, setPlaylists] = useState<{
+    id: string,
+    name: string
+  }[]>([]);
+
   const matches = useMatches();
 
+  useEffect(() => {
+    const getPlaylists = async () => {
+      const playlistData = await fetch('/api/playlists/list');
+      const data = await playlistData.json();
+
+      setPlaylists(data);
+    }
+
+    getPlaylists();
+  }, [])
+
   return (
-    <>
-      <aside className={cn('bg-background h-screen pb-12 border-l md:border-r', className)}>
-        <div className="space-y-4 py-4">
-          <div className="px-3 py-2">
-            <h2 className="mb-2 px-4 text-3xl font-bold tracking-tight fixed invisible md:visible md:static mb-3 primary-font">
-              Sonata
-            </h2>
-            <div className="flex flex-col space-y-1">
-              {links.map((link, index) => {
-                let Icon = link.icon;
-                return (
-                  <Link key={index} to={link.href}>
-                    <Button variant={matches[1] ? matches[1].pathname === link.href ? "default" : "ghost" : "ghost"} className="w-full justify-start">
-                      <Icon className="mr-2 h-4 w-4" /> {link.name}
-                    </Button>
-                  </Link>
-                )
-              })}
-            </div>
-          </div>
-        </div>
-      </aside>
-    </>
+    <Sidebar>
+      <SidebarHeader>
+        <h2 className="mt-5 px-4 text-3xl font-bold tracking-tight fixed invisible md:visible md:static primary-font">
+          Sonata
+        </h2>
+      </SidebarHeader>
+      <SidebarContent>
+        <SidebarGroup>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {links.map((item, index) => (
+                <SidebarMenuItem key={index}>
+                  <SidebarMenuButton isActive={matches[1] && matches[1].pathname === item.href} asChild>
+                    <Link to={item.href}>
+                      <item.icon />
+                      <span>{item.name}</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+        <Collapsible defaultOpen className="group/collapsible">
+          <SidebarGroup>
+            <SidebarGroupLabel asChild>
+              <CollapsibleTrigger>
+                Playlists
+                <ChevronDown className="ml-auto transition-transform group-data-[state=open]/collapsible:rotate-180" />
+              </CollapsibleTrigger>
+            </SidebarGroupLabel>
+            <CollapsibleContent>
+              <SidebarGroupContent>
+                <SidebarMenu>
+                  <SidebarMenuItem>
+                    <SidebarMenuButton asChild>
+                      <Link to="/liked">
+                        <Heart />
+                        <span>Liked</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                  {playlists.map((playlist, index) => {
+                    return (
+                      <SidebarMenuItem key={index}>
+                        <SidebarMenuButton asChild>
+                          <Link to={`/playlist/${playlist.id}`}>
+                            <ListMusic></ListMusic>
+                            <span>{playlist.name}</span>
+                          </Link>
+                        </SidebarMenuButton>
+                      </SidebarMenuItem>
+                    )
+                  })}
+                </SidebarMenu>
+              </SidebarGroupContent>
+            </CollapsibleContent>
+          </SidebarGroup>
+        </Collapsible>
+      </SidebarContent>
+    </Sidebar>
   )
 }
