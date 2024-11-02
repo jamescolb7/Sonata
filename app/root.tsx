@@ -4,6 +4,7 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
+  useRouteError,
 } from "@remix-run/react";
 import LayoutContent from './components/layout';
 import '@fontsource-variable/inter/index.css';
@@ -15,6 +16,28 @@ import { getAuth } from "./middleware/middlewareAuth";
 import { serverOnly$ } from 'vite-env-only/macros';
 
 export const middleware = serverOnly$([getAuth]);
+
+const prod = process.env.NODE_ENV;
+
+export function ErrorBoundary() {
+  const error = useRouteError() as Error;
+
+  return (
+    <>
+      {prod === "production" ? <>
+        <h1 className="text-2xl font-bold">Something Went Wrong!</h1>
+        <p>The application may have experienced an error, or you may not be logged in!</p>
+      </> : <>
+        {error && <>
+          <h1>Error</h1>
+          <p>{error.message}</p>
+          <p>The stack trace is:</p>
+          <pre>{error.stack}</pre>
+        </>}
+      </>}
+    </>
+  )
+}
 
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
