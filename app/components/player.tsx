@@ -196,7 +196,12 @@ export default function Player({
       //Quality
       const quality = localStorage.getItem('quality');
 
-      setPlayerUrl(`/api/stream/deezer/${player.id}.${Number(quality) === 9 ? "flac" : "mp3"}${quality ? `?quality=${quality}` : ""}`);
+      const loggedIn = localStorage.getItem('loggedIn');
+      if (loggedIn) {
+        setPlayerUrl(`/api/stream/deezer/${player.id}.${Number(quality) === 9 ? "flac" : "mp3"}${quality ? `?quality=${quality}` : ""}`);
+      } else {
+        if (player.preview) setPlayerUrl(player.preview);
+      }
     }
 
     if (player?.album?.cover_medium) {

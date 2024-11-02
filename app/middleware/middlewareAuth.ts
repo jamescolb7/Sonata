@@ -19,10 +19,11 @@ export async function getAuth({ request, context, next }: MiddlewareFunctionArgs
     const path = new URL(request.url).pathname;
     let allowedPaths = ['/login', '/assets/', '/public/', '/favicon.ico']
 
-    if (guestsAllowed === "true") allowedPaths.push('/track/', '/album/', '/artist/');
+    if (guestsAllowed === "true") allowedPaths.push('/browse', '/editorial/', '/track/', '/album/', '/artist/');
 
     //Login page
     let guestPath = allowedPaths.findIndex(p => {
+      if (guestsAllowed === "true" && path === "/") return true;
       return path.startsWith(p);
     })
 

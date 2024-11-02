@@ -7,6 +7,24 @@ import { nanoid } from 'nanoid';
 
 const router = express.Router();
 
+router.get('/search', async (req: Request, res: Response) => {
+    const query = req.query.q;
+
+    if (!query) return res.sendStatus(400);
+
+    const request = await fetch(`https://api.deezer.com/search?q=${query}`);
+    if (!request.ok) return res.sendStatus(500);
+
+    const data = await request.json();
+    if (!data) return;
+
+    return res.json(data);
+})
+
+router.get('/auth', async (req: Request, res: Response) => {
+    return res.json({ loggedIn: true });
+})
+
 router.get('/liked/:id', async (req: Request, res: Response) => {
     if (!req.params.id || isNaN(Number(req.params.id))) return res.sendStatus(400);
     try {

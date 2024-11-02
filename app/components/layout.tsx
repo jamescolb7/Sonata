@@ -33,6 +33,17 @@ export default function Content({
     setSearchQuery('');
   }, [matches[1]])
 
+  useEffect(() => {
+    const checkLoggedIn = async () => {
+      const loggedIn = await fetch(`/api/auth`);
+      if (!loggedIn.ok) return;
+      const data = await loggedIn.json();
+      if (data.loggedIn) localStorage.setItem('loggedIn', "true");
+    }
+
+    checkLoggedIn();
+  }, [])
+
   return (
     <>
       <SidebarProvider open={open} onOpenChange={setOpen}>
