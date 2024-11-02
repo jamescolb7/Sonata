@@ -1,4 +1,5 @@
 import {
+  Link,
   Links,
   Meta,
   Outlet,
@@ -26,7 +27,7 @@ export function ErrorBoundary() {
     <>
       {prod === "production" ? <>
         <h1 className="text-2xl font-bold">Something Went Wrong!</h1>
-        <p>The application may have experienced an error, or you may not be logged in!</p>
+        <p>The application may have experienced an error, or you may not be <Link to={'/login'}>logged in</Link>!</p>
       </> : <>
         {error && <>
           <h1>Error</h1>
