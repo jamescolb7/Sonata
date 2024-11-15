@@ -6,6 +6,8 @@ import os from 'os';
 const temp = os.tmpdir();
 export const path = `${temp}/SonataServer`
 
+if (!fs.existsSync(path)) fs.mkdirSync(path, { recursive: true });
+
 export default async function StreamRoute(req: Request, res: Response) {
     const id = req.params.id.split('.')[0];
     if (isNaN(Number(id))) return res.sendStatus(400);
