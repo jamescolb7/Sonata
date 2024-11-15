@@ -8,6 +8,7 @@ import Image from './server/image';
 import { Auth, CSRF } from './server/auth';
 import Actions from './server/actions';
 import StreamRoute from './server/stream';
+import { init as deezerPluginInit } from './server/plugins/deezer';
 
 const port = parseInt(process.env.PORT || '3000', 10);
 const dev = process.env.NODE_ENV !== 'production';
@@ -63,3 +64,5 @@ app.prepare().then(() => {
 		console.log(`Ready on http://localhost:${port}`);
 	})
 })
+
+deezerPluginInit();

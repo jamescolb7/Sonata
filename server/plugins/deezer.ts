@@ -26,7 +26,7 @@ export async function init() {
     await dfi.initDeezerApi(arl);
     try {
         if (!fs.existsSync(path)) fs.mkdirSync(path);
-        if (!fs.existsSync(`${path}/${pluginName}`)) fs.mkdirSync(`${path}/${pluginName}`);
+        if (!fs.existsSync(`${path}/${pluginName}`)) fs.mkdirSync(`${path}/${pluginName}`, { recursive: true });
         await dfi.getUser();
         console.log('[Deezer Plugin] Plugin Ready');
     } catch (e: unknown) {
