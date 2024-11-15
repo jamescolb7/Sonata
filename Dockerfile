@@ -10,6 +10,8 @@ RUN npm install
 
 COPY . .
 
+RUN mkdir database
+RUN npm run migrate
 RUN npm run build
 
 EXPOSE 3000
