@@ -20,7 +20,7 @@
 
 ## Key Features
 
-* Interface made in React and Remix
+* Interface made in React and Next.js
 * Music data provided by Deezer
 	* Artist view of top songs and albums
 	* Album view
@@ -75,7 +75,7 @@ SIGNUPS_ALLOWED=false
 
 ```bash
 # Run the app
-$ npm start
+$ npm prod:start
 ```
 
 ## Download
