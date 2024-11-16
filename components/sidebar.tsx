@@ -12,6 +12,7 @@ import {
 	SidebarMenu,
 	SidebarMenuButton,
 	SidebarMenuItem,
+	useSidebar,
 } from "./ui/sidebar"
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "./ui/collapsible";
 import Link from "next/link";
@@ -58,6 +59,7 @@ export default function AppSidebar() {
 	}[]>([]);
 
 	const pathname = usePathname();
+	const { setOpenMobile } = useSidebar();
 
 	useEffect(() => {
 		const getPlaylists = async () => {
@@ -85,7 +87,7 @@ export default function AppSidebar() {
 						<SidebarMenu>
 							{links.map((item, index) => (
 								<SidebarMenuItem key={index}>
-									<SidebarMenuButton isActive={pathname === item.href} asChild>
+									<SidebarMenuButton onClick={() => { setOpenMobile(false) }} isActive={pathname === item.href} asChild>
 										<Link href={item.href}>
 											<item.icon />
 											<span>{item.name}</span>
