@@ -17,6 +17,7 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.BASE_URL || "http://localhost:3000"),
   title: "Sonata",
   description: "Your self-hosted music streaming platform.",
 };

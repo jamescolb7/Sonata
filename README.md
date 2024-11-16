@@ -65,6 +65,8 @@ $ npm run build
 Please ensure the following environment variables are set to ensure the correct function of Sonata. Each can be changed depending on your preferences for how "open" the app should be to guests, and if users should be allowed to sign up.
 
 ```env
+# Public URL of the application
+BASE_URL=http://localhost:3000
 # Allow unauthenticated users to access basic functionality (browse, search, listen to audio previews)
 GUESTS_ALLOWED=true
 # If user signup/account creation is enabled.

@@ -110,7 +110,7 @@ export default function AppSidebar() {
 							<SidebarGroupContent>
 								<SidebarMenu>
 									<SidebarMenuItem>
-										<SidebarMenuButton asChild>
+										<SidebarMenuButton onClick={() => { setOpenMobile(false) }} asChild>
 											<Link href="/liked">
 												<Heart />
 												<span>Liked</span>
@@ -120,7 +120,7 @@ export default function AppSidebar() {
 									{playlists.map((playlist, index) => {
 										return (
 											<SidebarMenuItem key={index}>
-												<SidebarMenuButton asChild>
+												<SidebarMenuButton onClick={() => { setOpenMobile(false) }} asChild>
 													<Link href={`/playlist/${playlist.id}`}>
 														<ListMusic></ListMusic>
 														<span>{playlist.name}</span>
