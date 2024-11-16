@@ -29,8 +29,11 @@ app.prepare().then(() => {
 	server.use(CSRF);
 	server.use(Auth);
 
+	//Static routes
+	server.use(express.static('public'));
+
 	//Auth Checking
-	const allowedPaths = ["/login", "/assets/", "/public/", "/favicon.ico", "/_next/"];
+	const allowedPaths = ["/login", "/_next/"];
 	if (guestsAllowed) allowedPaths.push('/browse', '/track/', '/album/', '/artist/', '/image');
 
 	server.use((req, res, next) => {
@@ -52,7 +55,6 @@ app.prepare().then(() => {
 	//API Routes
 	server.get('/image', Image);
 	server.get('/api/stream/:plugin/:id', StreamRoute);
-	server.use(express.static('public'));
 	server.use('/api', Actions);
 
 	server.all('*', (req, res) => {
