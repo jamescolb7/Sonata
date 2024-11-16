@@ -1,14 +1,17 @@
 'use client';
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { SidebarProvider, SidebarTrigger } from "./ui/sidebar";
 import Sidebar from "./sidebar";
 import { Input } from "./ui/input";
 import Search from "./search";
 import Player from "./player";
+import { usePathname } from "next/navigation";
 
 export default function Content({ children }: { children: React.ReactNode }) {
 	const [searchQuery, setSearchQuery] = useState("");
+
+	const pathname = usePathname();
 
 	let timeout: ReturnType<typeof setTimeout> = setTimeout(() => { });
 
@@ -19,6 +22,10 @@ export default function Content({ children }: { children: React.ReactNode }) {
 			setSearchQuery(e.target.value);
 		}, 200)
 	}
+
+	useEffect(() => {
+		setSearchQuery("");
+	}, [pathname])
 
 	return (
 		<>
