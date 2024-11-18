@@ -104,7 +104,7 @@ async function login(_: unknown, formData: FormData): Promise<{ error: string | 
 		const sessionCookie = lucia.createSessionCookie(session.id);
 		(await cookies()).set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes);
 	} else {
-		const validPassword = await verify(password, existingUser.hashedPassword);
+		const validPassword = await verify(existingUser.hashedPassword, password);
 		if (!validPassword) return { error: "Invalid password or password" }
 
 		const session = await lucia.createSession(existingUser.id, {});
