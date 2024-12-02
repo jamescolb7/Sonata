@@ -181,25 +181,23 @@ export default function Player({
     playerElem?.addEventListener('pause', () => setPaused(true));
 
     if (player.id) {
-      fetch(`/api/liked/${player.id}`).then(res => res.json()).then((data: { liked: boolean }) => {
+      fetch(`/api/liked/${player.id}`).then(res => res.json()).then((data: { liked: boolean, error?: string }) => {
         if (data.liked) {
           setLiked(true);
         } else {
           setLiked(false);
         }
+
+        if (data.error) {
+          if (player.preview) setPlayerUrl(player.preview);
+          setLiked(false);
+        } else {
+          const quality = localStorage.getItem('quality');
+          setPlayerUrl(`/api/stream/deezer/${player.id}.${Number(quality) === 9 ? "flac" : "mp3"}${quality ? `?quality=${quality}` : ""}`);
+        }
       }).catch(() => {
         setLiked(false);
       })
-
-      //Quality
-      const quality = localStorage.getItem('quality');
-
-      const loggedIn = localStorage.getItem('loggedIn');
-      if (loggedIn) {
-        setPlayerUrl(`/api/stream/deezer/${player.id}.${Number(quality) === 9 ? "flac" : "mp3"}${quality ? `?quality=${quality}` : ""}`);
-      } else {
-        if (player.preview) setPlayerUrl(player.preview);
-      }
     }
 
     if (player?.album?.cover_medium) {
