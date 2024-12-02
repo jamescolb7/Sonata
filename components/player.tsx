@@ -209,8 +209,8 @@ export default function Player({
         album: player?.album?.title,
         artwork: [
           {
-            src: '/image?q=' + player?.album?.cover_medium,
-            sizes: '250x250'
+            src: '/image?q=' + player?.album?.cover_big,
+            sizes: '500x500'
           }
         ]
       })
