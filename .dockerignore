@@ -5,3 +5,4 @@ node_modules
 .env
 *.db
 /public/build
+/.next
