@@ -1,16 +1,29 @@
 import fs from 'fs';
 import { path } from '../stream';
 import * as dfi from 'd-fi-core';
+import { type trackType } from 'd-fi-core/dist/types';
 
 export const pluginName = "deezer";
 
 const arl = process.env.ARL as string ?? null;
 
+async function getUrl(track: trackType, quality: number): Promise<{ trackUrl: string; isEncrypted: boolean; fileSize: number; } | null> {
+    try {
+        const trackUrl = await dfi.getTrackDownloadUrl(track, quality);
+        return trackUrl;
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (e: unknown) {
+        //Track unavailable in higher quality
+        const trackUrl = await getUrl(track, quality === 9 ? 3 : 1);
+        return trackUrl;
+    }
+}
+
 export default async function DeezerDownload(id: string, quality: number) {
     if (!arl) throw new Error('[Deezer Plugin] No ARL');
 
     const track = await dfi.getTrackInfo(id);
-    const trackUrl = await dfi.getTrackDownloadUrl(track, quality);
+    const trackUrl = await getUrl(track, quality);
 
     if (!trackUrl) throw new Error('[Deezer Plugin] Failed to fetch track URL');
 
