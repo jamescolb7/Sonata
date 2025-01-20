@@ -252,7 +252,7 @@ export default function Player({
         <div className='w-full h-[6px]' onClick={seek}>
           <div className={`bg-primary rounded-sm h-full`} style={{ width: `${progress}%` }}></div>
         </div>
-        <div className="flex flex-row flex-nowrap justify-between w-full pb-3 h-full px-4">
+        <div className="flex justify-between md:grid md:grid-cols-3 w-full pb-3 h-full px-4">
           <div className="flex items-center space-x-3 overflow-hidden">
             <Image className="h-11 w-11 sm:h-14 sm:w-14 rounded-md border indent-[-10000px]" src={player?.album ? player?.album?.cover_small : ""} alt="" />
             <div className="overflow-hidden">
@@ -290,12 +290,12 @@ export default function Player({
               </Tooltip>
             </TooltipProvider>
           </div>
-          <div className="flex items-center flex-row space-x-3 cursor-pointer">
+          <div className="justify-center flex items-center flex-row space-x-3 cursor-pointer">
             <SkipBack onClick={back} className="h-7 w-7 sm:h-8 sm:w-8 fixed invisible md:static md:visible" />
             {paused ? <Play onClick={togglePlay} className="h-7 w-7 sm:h-8 sm:w-8" /> : <Pause onClick={togglePlay} className="h-7 w-7 sm:h-8 sm:w-8" />}
             <SkipForward onClick={skip} className="h-7 w-7 sm:h-8 sm:w-8" />
           </div>
-          <div className="flex items-center space-x-3 fixed invisible md:static md:visible">
+          <div className="justify-end flex items-center space-x-3 fixed invisible md:static md:visible">
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger>
