@@ -8,6 +8,7 @@ export function cn(...inputs: ClassValue[]) {
 const pad = (num: number) => num.toString().padStart(2, "0");
 
 export function formatTime(time: number) {
+  if (isNaN(time)) return `0:00`
   const minutes = Math.floor(time / 60);
   const seconds = Math.floor(time % 60);
   return `${pad(minutes)}:${pad(seconds)}`;

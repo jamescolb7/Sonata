@@ -1,15 +1,8 @@
 import { Track } from "@/types/Track";
 import { useEffect, useState } from "react";
-import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogHeader,
-    DialogTitle
-} from "./ui/dialog";
 import { ScrollArea } from "./ui/scroll-area"
 
-function Lyrics({ data }: { data: { time: number, text: string }[] }) {
+function LyricsCollection({ data }: { data: { time: number, text: string }[] }) {
     const [time, setTime] = useState(0);
     const [selectedLyric, setSelectedLyric] = useState(-1);
 
@@ -44,12 +37,10 @@ function Lyrics({ data }: { data: { time: number, text: string }[] }) {
 }
 
 interface LyricsModalProps extends React.HTMLAttributes<HTMLElement> {
-    open: boolean,
-    set: React.Dispatch<React.SetStateAction<boolean>>,
-    player: Partial<Track>
+    track: Partial<Track>
 }
 
-export default function LyricsModal({ open, set, player }: LyricsModalProps) {
+export default function Lyrics({ track }: LyricsModalProps) {
     const [data, setData] = useState<[] | { time: number, text: string }[]>([]);
     const [failed, setFailed] = useState(false);
 
@@ -57,7 +48,7 @@ export default function LyricsModal({ open, set, player }: LyricsModalProps) {
         if (!open) return;
 
         const getData = async () => {
-            const res = await fetch(`/api/lyrics/${player.id}`);
+            const res = await fetch(`/api/lyrics/${track.id}`);
             const json = await res.json();
 
             if (json.syncedLyrics) {
@@ -85,22 +76,12 @@ export default function LyricsModal({ open, set, player }: LyricsModalProps) {
         }
 
         getData();
-    }, [open, player.id])
+    }, [track.id])
 
     return (
-        <Dialog open={open} onOpenChange={() => { set(!open) }}>
-            <DialogContent>
-                <DialogHeader>
-                    <DialogTitle>{player.title}</DialogTitle>
-                    <DialogDescription>
-                        by {player?.artist?.name}
-                    </DialogDescription>
-                    <ScrollArea className="h-[400px] rounded-sm border p-4">
-                        {!failed && <Lyrics data={data} />}
-                        {failed && <h1>No lyrics found for this track.</h1>}
-                    </ScrollArea>
-                </DialogHeader>
-            </DialogContent>
-        </Dialog>
+        <ScrollArea className="h-[400px] rounded-sm border p-4">
+            {!failed && <LyricsCollection data={data} />}
+            {failed && <h1>No lyrics found for this track.</h1>}
+        </ScrollArea>
     )
 }
