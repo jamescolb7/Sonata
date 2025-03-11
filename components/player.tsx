@@ -1,322 +1,268 @@
-import { useAtom, useAtomValue } from "jotai";
-import { cn } from "@/lib/utils";
-import { Slider } from "./ui/slider";
-import { Heart, HeartOffIcon, ListPlusIcon, Pause, Play, SkipBack, SkipForward, Volume, Volume1, Volume2, Mic2 } from "lucide-react";
-import { PlayerAtom, PlaylistDialog, QueueAtom, QueueIndexAtom } from "@/lib/state";
+import { CircleAlert, Heart, HeartOffIcon, ListPlusIcon, Mic2, Pause, Play, SkipBack, SkipForward, Volume, Volume1, Volume2 } from "lucide-react"
+import Image from "./image"
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./ui/tooltip";
-import Image from "./image";
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle
-} from "./ui/dialog"
-import { Label } from "./ui/label"
-import { RadioGroup, RadioGroupItem } from "./ui/radio-group"
-import { Button } from "./ui/button";
+import { PlayerAtom, QueueAtom, QueueIndexAtom } from "@/lib/state";
+import { useAtom, useAtomValue } from "jotai";
+import React, { memo, useEffect, useRef, useState } from "react";
 import { Track } from "@/types/Track";
-import Lyrics from './lyrics';
+import { formatTime } from "@/lib/utils";
+import { Slider } from "./ui/slider";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./ui/tooltip";
+import { Credenza, CredenzaBody, CredenzaClose, CredenzaContent, CredenzaDescription, CredenzaFooter, CredenzaHeader, CredenzaTitle, CredenzaTrigger } from "./ui/credenza";
+import { Button } from "./ui/button";
+import ListPlaylists from "./listPlaylists";
+import Lyrics from "./lyrics";
+import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
 
-const pad = (num: number) => num.toString().padStart(2, "0");
-
-function formatTime(time: number | undefined) {
-  if (time === undefined) return;
-  const minutes = Math.floor(time / 60);
-  const seconds = Math.floor(time % 60);
-  return `${pad(minutes)}:${pad(seconds)}`;
+enum PlayerActions {
+  Back,
+  PausePlay,
+  Skip
 }
 
-interface PlaylistModalProps extends React.HTMLAttributes<HTMLElement> {
-  open: boolean,
-  set: React.Dispatch<React.SetStateAction<boolean>>,
-  player: Partial<Track>
-}
-
-function PlaylistModal({ open, set, player }: PlaylistModalProps) {
-  const [data, setData] = useState<[] | { id: string, name: string }[]>([]);
-  const [selected, setSelected] = useState("option_0");
-
-  useEffect(() => {
-    const getData = async () => {
-      const res = await fetch(`/api/playlists/list`);
-      if (res.status !== 200) return;
-      const json = await res.json();
-      setData(json);
-    }
-
-    getData();
-  }, [open])
-
-  const save = async () => {
-    if (selected === null) return;
-
-    const index = selected ? selected.split('_')[1] as unknown as number : 0;
-
-    setSelected("option_0");
-
-    if (isNaN(index)) return;
-
-    const playlist = data[index].id;
-
-    const res = await fetch(`/api/playlists/set/${playlist}/${player.id}`);
-    if (res.ok) set(false);
+function ProgressBar({ audio, time }: { audio: React.RefObject<HTMLAudioElement | null>, time: number }) {
+  const seek = (e: React.MouseEvent<HTMLElement>) => {
+    if (!audio.current) return;
+    const duration = audio.current.duration;
+    if (!duration) return;
+    if (!e.pageX || !e.currentTarget) return;
+    audio.current.currentTime = duration * (e.pageX / e.currentTarget.offsetWidth);
   }
 
-  return (
-    <Dialog open={open} onOpenChange={() => { set(!open) }}>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Add to Playlist</DialogTitle>
-          <DialogDescription>
-            {data.length ? <>You are adding <b>{player.title}</b> to a playlist.</> : <>You do not currently have any playlists.</>}
+  return <div className="w-full h-[6px]" onClick={seek}>
+    <div className="bg-primary rounded-sm h-full" style={{ width: audio.current ? `${time / audio.current.duration * 100}%` : "0%" }}></div>
+  </div>
+}
 
-          </DialogDescription>
-          <div>
-            <RadioGroup onValueChange={setSelected} defaultValue={`option_0`} className="gap-0 mt-2 mb-3">
-              {data.map((playlist, i) => {
-                return (
-                  <div key={i} className={`flex items-center space-x-2 p-4 hover:bg-secondary transition-colors ${i === 0 ? "border rounded-t-lg" : i + 1 === data.length ? "border rounded-b-lg border-t-0" : "border-x border-b"}`}>
-                    <RadioGroupItem value={`option_${i}`} id={`option_${i}`} />
-                    <Label htmlFor={`option_${i}`}>{playlist.name}</Label>
-                  </div>
-                )
-              })}
-            </RadioGroup>
-          </div>
-          {data.length > 0 && <DialogFooter>
-            <DialogClose asChild>
-              <Button type="button" onClick={() => {
-                if (data.length) return save();
-                set(false)
-              }} variant="default">
-                Save
-              </Button>
-            </DialogClose>
-          </DialogFooter>}
-        </DialogHeader>
-      </DialogContent>
-    </Dialog>
+const TrackInfo = memo(function TrackInfo({ track }: { track: Partial<Track> }) {
+  const [liked, setLiked] = useState(false);
+  const [selectedPlaylist, setSelectedPlaylist] = useState<{ id?: string, name?: string }>({});
+  const [playlistModalOpen, setPlaylistModalOpen] = useState(false);
+
+  useEffect(() => {
+    if (!track.id) return;
+    fetch(`/api/liked/${track.id}`).then(res => res.json()).then((data: { liked: boolean, error?: string }) => {
+      if (data.error) return setLiked(false);
+      setLiked(data.liked);
+    })
+  }, [track])
+
+  const like = () => {
+    if (!track.id) return;
+    fetch(`/api/like/${track.id}`).then((res) => {
+      if (res.status == 201) return setLiked(true);
+      return setLiked(false);
+    }).catch(() => {
+      setLiked(false);
+    })
+  }
+
+  const addToPlaylist = () => {
+    if (!selectedPlaylist.id || !selectedPlaylist.name || !track.id) return;
+    fetch(`/api/playlists/set/${selectedPlaylist.id}/${track.id}`).catch(() => {
+      console.log("Error occurred adding to playlist.")
+    });
+  }
+
+  return <>
+    <Image className="h-11 w-11 sm:h-14 sm:w-14 rounded-md border indent-[-10000px]" src={track?.album ? track?.album?.cover_small : ""} alt="" />
+    <div className="overflow-hidden">
+      <Link href={track.album?.id ? `/album/${track?.album?.id}` : ""}>
+        <h3 className="text-base primary-font sm:text-lg font-semibold text-nowrap">
+          {track.title}
+        </h3>
+      </Link>
+      <Link href={track.artist?.id ? `/artist/${track?.artist?.id}` : ""}>
+        <p className="text-sm">
+          {track?.artist?.name}
+        </p>
+      </Link>
+    </div>
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger>
+          {liked ? <Heart fill="#fff" onClick={like} className="h-6 w-6" /> : <HeartOffIcon onClick={like} className="h-6 w-6" />}
+        </TooltipTrigger>
+        <TooltipContent>
+          Like Song
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger>
+          <ListPlusIcon fill="#fff" onClick={() => setPlaylistModalOpen(true)} className="h-6 w-6" />
+        </TooltipTrigger>
+        <TooltipContent>
+          Add to Playlist
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
+    <Credenza open={playlistModalOpen} onOpenChange={setPlaylistModalOpen}>
+      <CredenzaContent>
+        <CredenzaHeader>
+          <CredenzaTitle>
+            Add to Playlist
+          </CredenzaTitle>
+          <CredenzaDescription>
+            {track.id ? <>Choose where to add <b>{track.title}</b>.</> : <>No track playing.</>}
+          </CredenzaDescription>
+        </CredenzaHeader>
+        <CredenzaBody>
+          {track.id ? <ListPlaylists setSelectedPlaylist={setSelectedPlaylist} /> : <Alert>
+            <CircleAlert className="h-4 w-4" />
+            <AlertTitle>Nothing Playing</AlertTitle>
+            <AlertDescription>
+              Play a song before you can add it to your playlist!
+            </AlertDescription>
+          </Alert>}
+        </CredenzaBody>
+        <CredenzaFooter>
+          <CredenzaClose asChild>
+            {(track.id && selectedPlaylist.id !== undefined) ? <Button onClick={addToPlaylist}>Save</Button> : <Button variant="outline">Close</Button>}
+          </CredenzaClose>
+        </CredenzaFooter>
+      </CredenzaContent>
+    </Credenza>
+  </>
+})
+
+const Controls = memo(function Controls({ playing, action }: { playing: boolean, action: (e: number) => void }) {
+  return (
+    <>
+      <SkipBack onClick={() => action(PlayerActions.Back)} className="h-7 w-7 sm:h-8 sm:w-8 fixed invisible md:static md:visible" />
+      <div onClick={() => action(PlayerActions.PausePlay)}>
+        {playing ? <Pause className="h-7 w-7 sm:h-8 sm:w-8" /> : <Play className="h-7 w-7 sm:h-8 sm:w-8" />}
+      </div>
+      <SkipForward onClick={() => action(PlayerActions.Skip)} className="h-7 w-7 sm:h-8 sm:w-8" />
+    </>
+  )
+})
+
+function Time({ audio, time }: { audio: React.RefObject<HTMLAudioElement | null>, time: number }) {
+  return (
+    <p className="font-semibold">{audio.current && audio.current.duration > 0 ? `${formatTime(time)} / ${formatTime(audio.current.duration)}` : "-:-- / -:--"}</p>
   )
 }
 
-export default function Player({
-  className,
-  ...props
-}: React.HTMLAttributes<HTMLElement>) {
-  const [player, setPlayer] = useAtom(PlayerAtom);
-  const queue = useAtomValue(QueueAtom);
-  const [queueIndex, setQueueIndex] = useAtom(QueueIndexAtom);
-
-  const [paused, setPaused] = useState<boolean>(true);
-  const [time, setTime] = useState<string | undefined>("00:00");
-  const [duration, setDuration] = useState<string | undefined>("00:00");
-  const [volume, setVolume] = useState<number>(100);
-  const [progress, setProgress] = useState<number>(0);
-  const [liked, setLiked] = useState<boolean>(false);
-  const [playlistDialogOpen, setPlaylistDialogOpen] = useAtom(PlaylistDialog);
-  const [lyricsDialogOpen, setLyricsDialogOpen] = useState<boolean>(false);
-  const [playerUrl, setPlayerUrl] = useState<string>("");
-
-  const playerRef = useRef<HTMLAudioElement>(null);
+const Actions = memo(function Actions({ audio, track }: { audio: React.RefObject<HTMLAudioElement | null>, track: Partial<Track> }) {
+  const [volume, setVolume] = useState(100);
 
   const changeVolume = (e: number[]) => {
     setVolume(e[0]);
-    if (playerRef.current === null) return;
-    playerRef.current.volume = volume / 100;
+    if (!audio.current) return;
+    audio.current.volume = volume / 100;
   }
 
-  const skip = () => {
-    if (queueIndex === null || !queue) return;
-    if (queueIndex >= queue.length - 1) return;
-    setPlayer(queue[queueIndex + 1]);
-    setQueueIndex(queueIndex + 1);
-  }
+  return <>
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger>
+          <Credenza>
+            <CredenzaTrigger asChild>
+              <Mic2 className="h-6 w-6 cursor-pointer"></Mic2>
+            </CredenzaTrigger>
+            <CredenzaContent>
+              <CredenzaHeader>
+                <CredenzaTitle>
+                  {track.title}
+                </CredenzaTitle>
+                <CredenzaDescription>
+                  By {track.artist?.name || "Unknown"}
+                </CredenzaDescription>
+              </CredenzaHeader>
+              <CredenzaBody>
+                <Lyrics track={track} />
+              </CredenzaBody>
+            </CredenzaContent>
+          </Credenza>
+        </TooltipTrigger>
+        <TooltipContent>
+          Live Lyrics
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
+    {volume === 0 ? <Volume className="h-8 w-8" /> : volume < 50 ? <Volume1 className="h-8 w-8"></Volume1> : <Volume2 className="h-8 w-8"></Volume2>}
+    <Slider className="w-[100px]" onValueChange={changeVolume} defaultValue={[volume]} max={100} step={0.01}></Slider>
+  </>
+})
 
-  const back = () => {
-    if (!queueIndex || !queue) return;
-    if (queueIndex <= 0) return;
-    setPlayer(queue[queueIndex - 1]);
-    setQueueIndex(queueIndex - 1);
-  }
+export default function Player() {
+  const [playing, setPlaying] = useState(false);
+  const [time, setTime] = useState(0);
 
-  const like = async () => {
-    if (!player.id) return;
-    await fetch(`/api/like/${player.id}`);
-    setLiked(!liked);
-  }
+  const queue = useAtomValue(QueueAtom);
+  const [track, setTrack] = useAtom(PlayerAtom);
+  const [queueIndex, setQueueIndex] = useAtom(QueueIndexAtom);
 
-  const seek = async (e: React.MouseEvent<HTMLElement>): Promise<void> => {
-    if (!player.id) return;
-    const time = playerRef.current?.duration;
-    if (!time) return;
-    if (playerRef.current === null) return;
-    if (e.pageX === null || e.currentTarget === null) return;
-    playerRef.current.currentTime = time * (e.pageX / e.currentTarget.offsetWidth);
+  const audioRef = useRef<HTMLAudioElement>(null);
+
+  const playerAction = (action: number) => {
+    switch (action) {
+      case PlayerActions.Back:
+        if (queueIndex === null || !queue) return;
+        if (queueIndex <= 0) return;
+        setTrack(queue[queueIndex - 1]);
+        setQueueIndex(queueIndex - 1);
+        break;
+      case PlayerActions.PausePlay:
+        setPlaying(!playing);
+        if (!audioRef.current) return;
+        if (playing) return audioRef.current.pause();
+        audioRef.current.play();
+        break;
+      case PlayerActions.Skip:
+        if (queueIndex === null || !queue) return;
+        if (queueIndex >= queue.length - 1) return;
+        setTrack(queue[queueIndex + 1]);
+        setQueueIndex(queueIndex + 1);
+        break;
+    }
   }
 
   useEffect(() => {
-    let playerElem: HTMLAudioElement | null = null;
-
-    if (playerRef.current) playerElem = playerRef.current;
-
-    const handleTime = () => {
-      const time = playerElem?.currentTime as number || 0;
-      const duration = playerElem?.duration as number || 0;
-      setTime(formatTime(time));
-      setProgress(time / duration * 100)
-    }
-
-    const changeTrack = () => {
-      setDuration(formatTime(playerElem?.duration));
-    }
-
-    playerElem?.addEventListener('loadedmetadata', changeTrack);
-    playerElem?.addEventListener('timeupdate', handleTime);
-    playerElem?.addEventListener('play', () => setPaused(false));
-    playerElem?.addEventListener('pause', () => setPaused(true));
-
-    if (player.id) {
-      fetch(`/api/liked/${player.id}`).then(res => res.json()).then((data: { liked: boolean, error?: string }) => {
-        if (data.liked) {
-          setLiked(true);
-        } else {
-          setLiked(false);
-        }
-
-        if (data.error) {
-          if (player.preview) setPlayerUrl(player.preview);
-          setLiked(false);
-        } else {
-          const quality = localStorage.getItem('quality');
-          setPlayerUrl(`/api/stream/deezer/${player.id}.${Number(quality) === 9 ? "flac" : "mp3"}${quality ? `?quality=${quality}` : ""}`);
-        }
-      }).catch(() => {
-        setLiked(false);
-      })
-    }
-
-    if (player?.album?.cover_medium) {
+    if (track.album?.cover_big) {
       navigator.mediaSession.metadata = new MediaMetadata({
-        title: player?.title,
-        artist: player?.artist?.name,
-        album: player?.album?.title,
+        title: track.title,
+        artist: track.artist?.name,
+        album: track.album?.title,
         artwork: [
           {
-            src: '/image?q=' + player?.album?.cover_big,
-            sizes: '500x500'
+            src: `/image?q=${track.album?.cover_big}`
           }
         ]
-      })
+      });
 
-      navigator.mediaSession.setActionHandler('previoustrack', back);
-      navigator.mediaSession.setActionHandler('nexttrack', skip);
+      navigator.mediaSession.setActionHandler('previoustrack', () => playerAction(PlayerActions.Back));
+      navigator.mediaSession.setActionHandler('nexttrack', () => playerAction(PlayerActions.Skip));
       navigator.mediaSession.setActionHandler('play', () => {
-        setPaused(!paused);
-        playerRef?.current?.play();
+        setPlaying(!playing);
+        audioRef?.current?.play();
       });
       navigator.mediaSession.setActionHandler('pause', () => {
-        setPaused(!paused);
-        playerRef?.current?.pause();
+        setPlaying(!playing);
+        audioRef?.current?.pause();
       });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [track]);
 
-    return () => {
-      playerElem?.removeEventListener('timeupdate', handleTime);
-      playerElem?.removeEventListener('loadedmetadata', changeTrack);
-      playerElem?.removeEventListener('play', () => setPaused(false));
-      playerElem?.removeEventListener('pause', () => setPaused(true));
-    }
-  }, [player])
-
-  const togglePlay = () => {
-    setPaused(!paused);
-    if (playerRef.current === null) return;
-    switch (paused) {
-      case true:
-        playerRef.current.play();
-        break;
-      case false:
-        playerRef.current.pause();
-        break;
-    }
-  }
-
-  return (
-    <>
-      <div {...props} className={cn(className, "fixed w-full bottom-0 border-t bg-background align-center z-[12] h-[89px]")}>
-        <div className='w-full h-[6px]' onClick={seek}>
-          <div className={`bg-primary rounded-sm h-full`} style={{ width: `${progress}%` }}></div>
+  return <>
+    <div className="fixed w-full bottom-0 border-t bg-background align-center z-[12] h-[89px]">
+      <ProgressBar audio={audioRef} time={time} />
+      <div className="flex justify-between md:grid md:grid-cols-3 w-full pb-3 h-full px-4">
+        <div className="flex items-center space-x-3 overflow-hidden">
+          <TrackInfo track={track} />
         </div>
-        <div className="flex flex-row flex-nowrap justify-between w-full pb-3 h-full px-4">
-          <div className="flex items-center space-x-3 overflow-hidden">
-            <Image className="h-11 w-11 sm:h-14 sm:w-14 rounded-md border indent-[-10000px]" src={player?.album ? player?.album?.cover_small : ""} alt="" />
-            <div className="overflow-hidden">
-              <Link href={player.album?.id ? `/album/${player?.album?.id}` : ""}>
-                <h3 className="text-base primary-font sm:text-lg font-semibold text-nowrap">
-                  {player.title}
-                </h3>
-              </Link>
-              <Link href={player.artist?.id ? `/artist/${player?.artist?.id}` : ""}>
-                <p className="text-sm">
-                  {player?.artist?.name}
-                </p>
-              </Link>
-            </div>
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger>
-                  {liked ? <Heart fill="#fff" onClick={like} className="h-6 w-6" /> : <HeartOffIcon onClick={like} className="h-6 w-6" />}
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>Like Song</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger>
-                  <ListPlusIcon onClick={() => {
-                    if (player.id) setPlaylistDialogOpen(!playlistDialogOpen);
-                  }} className="h-6 w-6" />
-                </TooltipTrigger>
-                <TooltipContent>
-                  Add to Playlist
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          </div>
-          <div className="flex items-center flex-row space-x-3 cursor-pointer">
-            <SkipBack onClick={back} className="h-7 w-7 sm:h-8 sm:w-8 fixed invisible md:static md:visible" />
-            {paused ? <Play onClick={togglePlay} className="h-7 w-7 sm:h-8 sm:w-8" /> : <Pause onClick={togglePlay} className="h-7 w-7 sm:h-8 sm:w-8" />}
-            <SkipForward onClick={skip} className="h-7 w-7 sm:h-8 sm:w-8" />
-          </div>
-          <div className="flex items-center space-x-3 fixed invisible md:static md:visible">
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger>
-                  <Mic2 className="h-6 w-6 cursor-pointer" onClick={() => {
-                    if (player.id) setLyricsDialogOpen(!lyricsDialogOpen)
-                  }}></Mic2>
-                </TooltipTrigger>
-                <TooltipContent>
-                  Live Lyrics
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-            {volume === 0 ? <Volume className="h-8 w-8" /> : volume < 50 ? <Volume1 className="h-8 w-8"></Volume1> : <Volume2 className="h-8 w-8"></Volume2>}
-            <Slider className="w-[100px]" onValueChange={changeVolume} defaultValue={[volume]} max={100} step={0.01}></Slider>
-            <p className="font-semibold">{time} / {duration}</p>
-          </div>
+        <div className="justify-center flex items-center flex-row space-x-3 cursor-pointer">
+          <Controls playing={playing} action={playerAction} />
+        </div>
+        <div className="justify-end flex items-center space-x-3 fixed invisible md:static md:visible">
+          <Actions audio={audioRef} track={track} />
+          <Time audio={audioRef} time={time} />
         </div>
       </div>
-      <PlaylistModal player={player} open={playlistDialogOpen} set={setPlaylistDialogOpen} />
-      <Lyrics player={player} open={lyricsDialogOpen} set={setLyricsDialogOpen} />
-      <audio ref={playerRef} onEnded={skip} src={playerUrl || undefined} autoPlay></audio>
-    </>
-  )
+    </div>
+    <audio ref={audioRef} src={track.id ? `/api/stream/deezer/${track.id}.mp3?quality=1` : undefined} autoPlay onTimeUpdate={(e) => setTime(e.currentTarget.currentTime)} onPause={() => setPlaying(false)} onPlay={() => setPlaying(true)} onEnded={() => playerAction(PlayerActions.Skip)}></audio>
+  </>
 }
