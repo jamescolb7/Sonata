@@ -1,4 +1,4 @@
-import { Heart, HeartOffIcon, ListPlusIcon, Mic2, Pause, Play, SkipBack, SkipForward, Volume, Volume1, Volume2 } from "lucide-react"
+import { CircleAlert, Heart, HeartOffIcon, ListPlusIcon, Mic2, Pause, Play, SkipBack, SkipForward, Volume, Volume1, Volume2 } from "lucide-react"
 import Image from "./image"
 import Link from "next/link";
 import { PlayerAtom, QueueAtom, QueueIndexAtom } from "@/lib/state";
@@ -12,6 +12,7 @@ import { Credenza, CredenzaBody, CredenzaClose, CredenzaContent, CredenzaDescrip
 import { Button } from "./ui/button";
 import ListPlaylists from "./listPlaylists";
 import Lyrics from "./lyrics";
+import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
 
 enum PlayerActions {
   Back,
@@ -36,6 +37,7 @@ function ProgressBar({ audio, time }: { audio: React.RefObject<HTMLAudioElement 
 const TrackInfo = memo(function TrackInfo({ track }: { track: Partial<Track> }) {
   const [liked, setLiked] = useState(false);
   const [selectedPlaylist, setSelectedPlaylist] = useState<{ id?: string, name?: string }>({});
+  const [playlistModalOpen, setPlaylistModalOpen] = useState(false);
 
   useEffect(() => {
     if (!track.id) return;
@@ -82,35 +84,46 @@ const TrackInfo = memo(function TrackInfo({ track }: { track: Partial<Track> }) 
           {liked ? <Heart fill="#fff" onClick={like} className="h-6 w-6" /> : <HeartOffIcon onClick={like} className="h-6 w-6" />}
         </TooltipTrigger>
         <TooltipContent>
-          <p>Like Song</p>
+          Like Song
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>
-    {track.id && <Credenza>
-      <CredenzaTrigger asChild>
-        <button>
-          <ListPlusIcon className="h-6 w-6"></ListPlusIcon>
-        </button>
-      </CredenzaTrigger>
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger>
+          <ListPlusIcon fill="#fff" onClick={() => setPlaylistModalOpen(true)} className="h-6 w-6" />
+        </TooltipTrigger>
+        <TooltipContent>
+          Add to Playlist
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
+    <Credenza open={playlistModalOpen} onOpenChange={setPlaylistModalOpen}>
       <CredenzaContent>
         <CredenzaHeader>
           <CredenzaTitle>
             Add to Playlist
           </CredenzaTitle>
           <CredenzaDescription>
-            Choose where to add <b>{track.title}</b>.
+            {track.id ? <>Choose where to add <b>{track.title}</b>.</> : <>No track playing.</>}
           </CredenzaDescription>
         </CredenzaHeader>
         <CredenzaBody>
-          <ListPlaylists setSelectedPlaylist={setSelectedPlaylist} />
+          {track.id ? <ListPlaylists setSelectedPlaylist={setSelectedPlaylist} /> : <Alert>
+            <CircleAlert className="h-4 w-4" />
+            <AlertTitle>Nothing Playing</AlertTitle>
+            <AlertDescription>
+              Play a song before you can add it to your playlist!
+            </AlertDescription>
+          </Alert>}
         </CredenzaBody>
         <CredenzaFooter>
           <CredenzaClose asChild>
-            <Button onClick={addToPlaylist}>Save</Button>
+            {(track.id && selectedPlaylist.id !== undefined) ? <Button onClick={addToPlaylist}>Save</Button> : <Button variant="outline">Close</Button>}
           </CredenzaClose>
         </CredenzaFooter>
       </CredenzaContent>
-    </Credenza>}
+    </Credenza>
   </>
 })
 
