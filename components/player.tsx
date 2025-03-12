@@ -78,7 +78,7 @@ const TrackInfo = memo(function TrackInfo({ track }: { track: Partial<Track> }) 
         </p>
       </Link>
     </div>
-    <TooltipProvider>
+    <TooltipProvider skipDelayDuration={500}>
       <Tooltip>
         <TooltipTrigger>
           {liked ? <Heart fill="#fff" onClick={like} className="h-6 w-6" /> : <HeartOffIcon onClick={like} className="h-6 w-6" />}
@@ -87,8 +87,6 @@ const TrackInfo = memo(function TrackInfo({ track }: { track: Partial<Track> }) 
           Like Song
         </TooltipContent>
       </Tooltip>
-    </TooltipProvider>
-    <TooltipProvider>
       <Tooltip>
         <TooltipTrigger>
           <ListPlusIcon fill="#fff" onClick={() => setPlaylistModalOpen(true)} className="h-6 w-6" />
@@ -165,10 +163,10 @@ const Actions = memo(function Actions({ audio, track }: { audio: React.RefObject
             <CredenzaContent>
               <CredenzaHeader>
                 <CredenzaTitle>
-                  {track.title}
+                  {track.title === "Not Playing" ? "Live Lyrics" : track.title}
                 </CredenzaTitle>
                 <CredenzaDescription>
-                  By {track.artist?.name || "Unknown"}
+                  {track.artist?.name ? `By ${track.artist.name}` : "Play a song to see live lyrics below. You must be signed in."}
                 </CredenzaDescription>
               </CredenzaHeader>
               <CredenzaBody>
