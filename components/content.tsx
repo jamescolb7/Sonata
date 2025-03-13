@@ -7,6 +7,7 @@ import { Input } from "./ui/input";
 import Search from "./search";
 import Player from "./player";
 import { usePathname } from "next/navigation";
+import CreatePlaylist from "./playlistCreate";
 
 export default function Content({ children }: { children: React.ReactNode }) {
 	const [searchQuery, setSearchQuery] = useState("");
@@ -43,6 +44,7 @@ export default function Content({ children }: { children: React.ReactNode }) {
 						{!searchQuery && children}
 					</div>
 				</div>
+				<CreatePlaylist />
 				<Player />
 			</SidebarProvider>
 		</>

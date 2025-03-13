@@ -17,6 +17,8 @@ import {
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "./ui/collapsible";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useAtomValue } from "jotai";
+import { PlaylistsRefresh } from "@/lib/state";
 
 type LinksType = {
 	name: string,
@@ -60,6 +62,7 @@ export default function AppSidebar() {
 
 	const pathname = usePathname();
 	const { setOpenMobile } = useSidebar();
+	const playlistsRefresh = useAtomValue(PlaylistsRefresh);
 
 	useEffect(() => {
 		const getPlaylists = async () => {
@@ -72,7 +75,7 @@ export default function AppSidebar() {
 		}
 
 		getPlaylists();
-	}, [])
+	}, [playlistsRefresh])
 
 	return (
 		<Sidebar>
