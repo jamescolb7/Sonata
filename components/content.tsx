@@ -39,7 +39,7 @@ export default function Content({ children }: { children: React.ReactNode }) {
 							<Input onChange={keyPress} type="text" placeholder="Search" className="w-full max-w-[400px]"></Input>
 						</div>
 					</header>
-					<div className="p-8 mb-[89px]">
+					<div className="p-2 py-6 md:p-8 mb-[89px]">
 						{searchQuery && <Search query={searchQuery}></Search>}
 						{!searchQuery && children}
 					</div>
