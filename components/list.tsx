@@ -1,7 +1,6 @@
 "use client";
 
 import { useSetAtom } from "jotai";
-import { Muted } from "./text"
 import { PlayerAtom, QueueAtom, QueueIndexAtom } from "@/lib/state";
 import { formatTime } from "@/lib/utils";
 import { Track } from "@/types/Track";
@@ -26,10 +25,10 @@ export default function List({ data }: { data: Track[] }) {
 						<Image className="rounded-sm w-[50px]" alt={track.album.title} src={track.album.cover_small}></Image>
 						<div className="w-full">
 							<h3 className="text-lg primary-font line-clamp-1">{track.title}</h3>
-							<Muted className="line-clamp-1">{track.artist.name}</Muted>
+							<p className="line-clamp-1 text-sm text-muted-foreground">{track.artist.name}</p>
 						</div>
 						<div>
-							<Muted>{track.duration && formatTime(track.duration)}</Muted>
+							<p className="text-sm text-muted-foreground">{track.duration && formatTime(track.duration)}</p>
 						</div>
 					</div>
 				)

@@ -1,4 +1,4 @@
-import { Title } from "@/components/text";
+import { Muted, Title } from "@/components/text";
 import { AudioLines, type LucideIcon, UserCircle } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import Link from "next/link";
@@ -27,6 +27,7 @@ export default function Settings() {
 	return (
 		<>
 			<Title className="!mb-2">Settings</Title>
+			<Muted className="-mt-1 mb-4">Modify your Sonata experience.</Muted>
 			<div className="grid grid-row gap-x-4 gap-y-4 grid-cols-1 md:grid-cols-3 lg:grid-cols-4">
 				{settings.map((setting, i) => {
 					const Icon = setting.icon;

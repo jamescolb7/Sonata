@@ -43,8 +43,8 @@ export default function SettingsAudio() {
 	return (
 		<>
 			<Title className="!mb-2">Audio</Title>
-			<Muted>Change settings related to your audio experience.</Muted>
-			<div className="max-w-[500px] flex flex-col space-y-3 mt-3">
+			<Muted className="-mt-1 mb-4">Change settings related to your audio experience.</Muted>
+			<div className="max-w-[500px] flex flex-col space-y-3">
 				<Card>
 					<CardContent className="p-6 space-y-5">
 						<div className="space-y-1.5">
