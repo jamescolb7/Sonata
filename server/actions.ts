@@ -4,13 +4,26 @@ import { history, liked, playlists, playlistTracks } from '@/drizzle/schema';
 import express, { type Request, type Response } from 'express';
 import { GetTrack } from './data/track';
 import { nanoid } from 'nanoid';
-import { Track } from '@/types/Track';
 
 const router = express.Router();
 
 router.use((req, res, next) => {
     if (!res.locals.user) return res.status(401).send({ error: "unauthorized" });
     next();
+})
+
+router.get('/plugins', async (req: Request, res: Response) => {
+    interface Plugin {
+        name: string,
+        value: string
+    }
+
+    const plugins: Plugin[] = [];
+
+    if (process.env.DEEZER_ENABLED?.toLowerCase() === "true") plugins.push({ name: "Deezer", value: "deezer" });
+    if (process.env.YOUTUBE_ENABLED?.toLowerCase() === "true") plugins.push({ name: "YouTube", value: "yt" });
+
+    return res.json(plugins);
 })
 
 router.get('/search', async (req: Request, res: Response) => {
@@ -93,10 +106,10 @@ router.get('/like/:id', async (req, res) => {
 router.get('/lyrics/:id', async (req, res) => {
     if (!req.params.id || isNaN(Number(req.params.id))) return res.sendStatus(400);
 
-    const track = await GetTrack(req.params.id) as Track;
+    const track = await GetTrack(req.params.id);
     if (!track) return res.sendStatus(400);
 
-    const data = await fetch(`https://lrclib.net/api/get?artist_name=${encodeURI(track.artist.name)}&track_name=${encodeURI(track.title)}&album_name=${encodeURI(track.album.title)}&duration=${track.duration}`, {
+    const data = await fetch(`https://lrclib.net/api/get?artist_name=${encodeURI(track.artist?.name || "")}&track_name=${encodeURI(track.title)}&album_name=${encodeURI(track.album?.title || "")}&duration=${track.duration}`, {
         headers: {
             "user-agent": "Sonata v1.0.0 (https://github.com/directlycrazy/Sonata)"
         }

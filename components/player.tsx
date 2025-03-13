@@ -188,6 +188,7 @@ const Actions = memo(function Actions({ audio, track }: { audio: React.RefObject
 export default function Player() {
   const [playing, setPlaying] = useState(false);
   const [time, setTime] = useState(0);
+  const [defaultPlugin, setDefaultPlugin] = useState("deezer");
 
   const queue = useAtomValue(QueueAtom);
   const [track, setTrack] = useAtom(PlayerAtom);
@@ -245,6 +246,14 @@ export default function Player() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [track]);
 
+  useEffect(() => {
+    fetch("/api/plugins").then(async res => {
+      if (!res.ok || res.status !== 200) return;
+      const data = await res.json() as unknown as { value: string }[];
+      setDefaultPlugin(data[0].value)
+    })
+  }, [])
+
   return <>
     <div className="fixed w-full bottom-0 border-t bg-background align-center z-[12] h-[89px]">
       <ProgressBar audio={audioRef} time={time} />
@@ -261,6 +270,6 @@ export default function Player() {
         </div>
       </div>
     </div>
-    <audio ref={audioRef} src={track.id ? `/api/stream/deezer/${track.id}.mp3?quality=1` : undefined} autoPlay onTimeUpdate={(e) => setTime(e.currentTarget.currentTime)} onPause={() => setPlaying(false)} onPlay={() => setPlaying(true)} onEnded={() => playerAction(PlayerActions.Skip)}></audio>
+    <audio ref={audioRef} src={track.id ? `/api/stream/${localStorage.getItem('plugin') || defaultPlugin}/${track.id}.mp3?quality=1` : undefined} autoPlay onTimeUpdate={(e) => setTime(e.currentTarget.currentTime)} onPause={() => setPlaying(false)} onPlay={() => setPlaying(true)} onEnded={() => playerAction(PlayerActions.Skip)}></audio>
   </>
 }
