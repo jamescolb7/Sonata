@@ -5,7 +5,7 @@ import { type trackType } from 'd-fi-core/dist/types';
 
 export const pluginName = "deezer";
 
-export const enabled = (process.env.DEEZER_ENABLED as string).toLowerCase() === "true";
+export const enabled = (process.env.DEEZER_ENABLED as string ?? "").toLowerCase() === "true";
 const arl = process.env.DEEZER_ARL as string ?? null;
 
 async function getUrl(track: trackType, quality: number): Promise<{ trackUrl: string; isEncrypted: boolean; fileSize: number; } | null> {

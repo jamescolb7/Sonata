@@ -6,7 +6,7 @@ import fs from 'fs';
 
 export const pluginName = "yt";
 
-export const enabled = (process.env.YOUTUBE_ENABLED as string).toLowerCase() === "true";
+export const enabled = (process.env.YOUTUBE_ENABLED as string ?? "").toLowerCase() === "true";
 
 let client: SearchClient | null;
 
