@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
-import DeezerDownload from "./plugins/deezer";
+import DeezerDownload, { enabled as deezerEnabled } from "./plugins/deezer";
+import YouTubeDownload, { enabled as youtubeEnabled } from "./plugins/youtube";
 import fs from 'fs';
 import os from 'os';
 
@@ -28,7 +29,21 @@ export default async function StreamRoute(req: Request, res: Response) {
     if (!fs.existsSync(filePath)) {
         switch (req.params.plugin) {
             case 'deezer':
+                if (!deezerEnabled) {
+                    success = false
+                    break;
+                };
                 await DeezerDownload(id, quality).catch((e) => {
+                    console.log(e);
+                    return success = false;
+                });
+                break;
+            case 'yt':
+                if (!youtubeEnabled) {
+                    success = false
+                    break;
+                };
+                await YouTubeDownload(id, quality).catch((e) => {
                     console.log(e);
                     return success = false;
                 });
@@ -43,6 +58,7 @@ export default async function StreamRoute(req: Request, res: Response) {
     if (fs.existsSync(filePath)) {
         return res.sendFile(filePath);
     } else {
+        console.log("File not found when streaming to client.")
         return res.sendStatus(500);
     }
 }

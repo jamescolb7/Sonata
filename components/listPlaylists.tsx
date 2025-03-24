@@ -1,11 +1,14 @@
 import { useEffect, useState } from "react";
 import { RadioGroup, RadioGroupItem } from "./ui/radio-group";
 import { Label } from "./ui/label";
-import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
-import { CircleAlert } from "lucide-react";
+import { ListPlus } from "lucide-react";
+import { useAtomValue, useSetAtom } from "jotai";
+import { CreatePlaylistModal, PlaylistsRefresh } from "@/lib/state";
 
 export default function ListPlaylists({ setSelectedPlaylist }: { setSelectedPlaylist: React.Dispatch<React.SetStateAction<{ id?: string, name?: string }>> }) {
 	const [playlists, setPlaylists] = useState<[] | { id: string, name: string }[]>([]);
+	const playlistsRefresh = useAtomValue(PlaylistsRefresh);
+	const setCreatePlaylistModalOpen = useSetAtom(CreatePlaylistModal)
 
 	useEffect(() => {
 		fetch("/api/playlists/list").then(res => res.json()).then(data => {
@@ -15,7 +18,7 @@ export default function ListPlaylists({ setSelectedPlaylist }: { setSelectedPlay
 			setSelectedPlaylist(data[0]);
 		}).catch(() => { })
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [])
+	}, [playlistsRefresh])
 
 	const updateSelection = (e: string) => {
 		const index = e.split("_")[1] as unknown as number || 0;
@@ -23,13 +26,6 @@ export default function ListPlaylists({ setSelectedPlaylist }: { setSelectedPlay
 	}
 
 	return <>
-		{playlists.length === 0 && <Alert>
-			<CircleAlert className="h-4 w-4" />
-			<AlertTitle>No Playlists</AlertTitle>
-			<AlertDescription>
-				You do not have any playlists! Please make one before trying to add a song.
-			</AlertDescription>
-		</Alert>}
 		{playlists.length > 0 && <RadioGroup onValueChange={updateSelection} defaultValue="option_0" className="gap-0 mt-2 mb-3">
 			{playlists.map((playlist, i) => {
 				return (
@@ -40,5 +36,10 @@ export default function ListPlaylists({ setSelectedPlaylist }: { setSelectedPlay
 				)
 			})}
 		</RadioGroup>}
+
+		<div onClick={() => setCreatePlaylistModalOpen(true)} className="flex items-center cursor-pointer space-x-2 p-4 hover:bg-secondary transition-colors border rounded-lg">
+			<ListPlus className="h-4 w-4" />
+			<p className="text-sm font-medium leading-none">Create New</p>
+		</div>
 	</>
 }

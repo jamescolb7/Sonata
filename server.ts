@@ -9,6 +9,7 @@ import { Auth, CSRF } from './server/auth';
 import Actions from './server/actions';
 import StreamRoute from './server/stream';
 import { init as deezerPluginInit } from './server/plugins/deezer';
+import { init as youtubePluginInit } from './server/plugins/youtube';
 
 const port = parseInt(process.env.PORT || '3000', 10);
 const dev = process.env.NODE_ENV !== 'production';
@@ -68,3 +69,4 @@ app.prepare().then(() => {
 })
 
 deezerPluginInit();
+youtubePluginInit();

@@ -1,11 +1,11 @@
-import { CircleAlert, Heart, HeartOffIcon, ListPlusIcon, Mic2, Pause, Play, SkipBack, SkipForward, Volume, Volume1, Volume2 } from "lucide-react"
+import { CircleAlert, CirclePause, CirclePlay, Heart, HeartOffIcon, ListPlusIcon, Mic2, Repeat, Shuffle, SkipBack, SkipForward, Volume, Volume1, Volume2 } from "lucide-react"
 import Image from "./image"
 import Link from "next/link";
-import { PlayerAtom, QueueAtom, QueueIndexAtom } from "@/lib/state";
+import { PlayerAtom, QueueAtom, QueueIndexAtom, ShuffleQueueAtom } from "@/lib/state";
 import { useAtom, useAtomValue } from "jotai";
 import React, { memo, useEffect, useRef, useState } from "react";
 import { Track } from "@/types/Track";
-import { formatTime } from "@/lib/utils";
+import { formatTime, ShuffleTracks } from "@/lib/utils";
 import { Slider } from "./ui/slider";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./ui/tooltip";
 import { Credenza, CredenzaBody, CredenzaClose, CredenzaContent, CredenzaDescription, CredenzaFooter, CredenzaHeader, CredenzaTitle, CredenzaTrigger } from "./ui/credenza";
@@ -17,7 +17,9 @@ import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
 enum PlayerActions {
   Back,
   PausePlay,
-  Skip
+  Skip,
+  Loop,
+  Shuffle
 }
 
 function ProgressBar({ audio, time }: { audio: React.RefObject<HTMLAudioElement | null>, time: number }) {
@@ -78,7 +80,7 @@ const TrackInfo = memo(function TrackInfo({ track }: { track: Partial<Track> }) 
         </p>
       </Link>
     </div>
-    <TooltipProvider>
+    <TooltipProvider skipDelayDuration={500}>
       <Tooltip>
         <TooltipTrigger>
           {liked ? <Heart fill="#fff" onClick={like} className="h-6 w-6" /> : <HeartOffIcon onClick={like} className="h-6 w-6" />}
@@ -87,8 +89,6 @@ const TrackInfo = memo(function TrackInfo({ track }: { track: Partial<Track> }) 
           Like Song
         </TooltipContent>
       </Tooltip>
-    </TooltipProvider>
-    <TooltipProvider>
       <Tooltip>
         <TooltipTrigger>
           <ListPlusIcon fill="#fff" onClick={() => setPlaylistModalOpen(true)} className="h-6 w-6" />
@@ -127,14 +127,29 @@ const TrackInfo = memo(function TrackInfo({ track }: { track: Partial<Track> }) 
   </>
 })
 
-const Controls = memo(function Controls({ playing, action }: { playing: boolean, action: (e: number) => void }) {
+const Controls = memo(function Controls({ playing, action }: { playing: boolean, action: (e: number, a?: boolean) => void }) {
+  const [shuffle, enableShuffle] = useState(false);
+  const [loop, enableLoop] = useState(false);
+
+  const toggleLoop = () => {
+    action(PlayerActions.Loop, !loop);
+    enableLoop(!loop);
+  }
+
+  const toggleShuffle = () => {
+    action(PlayerActions.Shuffle, !shuffle);
+    enableShuffle(!shuffle);
+  }
+
   return (
     <>
+      <Shuffle onClick={toggleShuffle} className={`h-6 w-6 fixed invisible md:static md:visible mr-2 ${!shuffle && "text-muted-foreground"}`} />
       <SkipBack onClick={() => action(PlayerActions.Back)} className="h-7 w-7 sm:h-8 sm:w-8 fixed invisible md:static md:visible" />
       <div onClick={() => action(PlayerActions.PausePlay)}>
-        {playing ? <Pause className="h-7 w-7 sm:h-8 sm:w-8" /> : <Play className="h-7 w-7 sm:h-8 sm:w-8" />}
+        {playing ? <CirclePause className="h-8 w-8 sm:h-10 sm:w-10" /> : <CirclePlay className="h-8 w-8 sm:h-10 sm:w-10" />}
       </div>
       <SkipForward onClick={() => action(PlayerActions.Skip)} className="h-7 w-7 sm:h-8 sm:w-8" />
+      <Repeat onClick={toggleLoop} className={`h-6 w-6 fixed invisible md:static md:visible ml-2 ${!loop && "text-muted-foreground"}`} />
     </>
   )
 })
@@ -165,10 +180,10 @@ const Actions = memo(function Actions({ audio, track }: { audio: React.RefObject
             <CredenzaContent>
               <CredenzaHeader>
                 <CredenzaTitle>
-                  {track.title}
+                  {track.title === "Not Playing" ? "Live Lyrics" : track.title}
                 </CredenzaTitle>
                 <CredenzaDescription>
-                  By {track.artist?.name || "Unknown"}
+                  {track.artist?.name ? `By ${track.artist.name}` : "Play a song to see live lyrics below. You must be signed in."}
                 </CredenzaDescription>
               </CredenzaHeader>
               <CredenzaBody>
@@ -190,32 +205,56 @@ const Actions = memo(function Actions({ audio, track }: { audio: React.RefObject
 export default function Player() {
   const [playing, setPlaying] = useState(false);
   const [time, setTime] = useState(0);
+  const [defaultPlugin, setDefaultPlugin] = useState("deezer");
 
   const queue = useAtomValue(QueueAtom);
+  const [shuffledQueue, setShuffledQueue] = useAtom(ShuffleQueueAtom);
   const [track, setTrack] = useAtom(PlayerAtom);
   const [queueIndex, setQueueIndex] = useAtom(QueueIndexAtom);
 
   const audioRef = useRef<HTMLAudioElement>(null);
 
-  const playerAction = (action: number) => {
+  const playerAction = (action: number, value?: boolean) => {
+    if (!audioRef.current) return;
     switch (action) {
       case PlayerActions.Back:
         if (queueIndex === null || !queue) return;
         if (queueIndex <= 0) return;
-        setTrack(queue[queueIndex - 1]);
+        if (shuffledQueue.length) {
+          //Use shuffled queue instead
+          setTrack(shuffledQueue[queueIndex - 1]);
+        } else {
+          setTrack(queue[queueIndex - 1]);
+        }
         setQueueIndex(queueIndex - 1);
         break;
       case PlayerActions.PausePlay:
         setPlaying(!playing);
-        if (!audioRef.current) return;
         if (playing) return audioRef.current.pause();
         audioRef.current.play();
         break;
       case PlayerActions.Skip:
         if (queueIndex === null || !queue) return;
-        if (queueIndex >= queue.length - 1) return;
-        setTrack(queue[queueIndex + 1]);
+        if (shuffledQueue.length) {
+          //Use shuffled queue instead
+          if (queueIndex >= shuffledQueue.length - 1) return;
+          setTrack(shuffledQueue[queueIndex + 1]);
+        } else {
+          if (queueIndex >= queue.length - 1) return;
+          setTrack(queue[queueIndex + 1]);
+        }
         setQueueIndex(queueIndex + 1);
+        break;
+      case PlayerActions.Loop:
+        audioRef.current.loop = value ?? false;
+        break;
+      case PlayerActions.Shuffle:
+        if (value) {
+          const shuffled = ShuffleTracks(queue);
+          setShuffledQueue(shuffled);
+        } else {
+          setShuffledQueue([]);
+        }
         break;
     }
   }
@@ -247,6 +286,15 @@ export default function Player() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [track]);
 
+  useEffect(() => {
+    fetch("/api/plugins").then(async res => {
+      if (!res.ok || res.status !== 200) return;
+      const data = await res.json() as unknown as { value: string }[] | [];
+      if (!data[0].value) return;
+      setDefaultPlugin(data[0].value)
+    })
+  }, [])
+
   return <>
     <div className="fixed w-full bottom-0 border-t bg-background align-center z-[12] h-[89px]">
       <ProgressBar audio={audioRef} time={time} />
@@ -263,6 +311,6 @@ export default function Player() {
         </div>
       </div>
     </div>
-    <audio ref={audioRef} src={track.id ? `/api/stream/deezer/${track.id}.mp3?quality=1` : undefined} autoPlay onTimeUpdate={(e) => setTime(e.currentTarget.currentTime)} onPause={() => setPlaying(false)} onPlay={() => setPlaying(true)} onEnded={() => playerAction(PlayerActions.Skip)}></audio>
+    <audio ref={audioRef} src={track.id ? `/api/stream/${localStorage.getItem('plugin') || defaultPlugin}/${track.id}.mp3?quality=${localStorage.getItem("quality") ?? 3}` : undefined} autoPlay onTimeUpdate={(e) => setTime(e.currentTarget.currentTime)} onPause={() => setPlaying(false)} onPlay={() => setPlaying(true)} onEnded={() => playerAction(PlayerActions.Skip)}></audio>
   </>
 }

@@ -3,7 +3,7 @@ import { db } from "@/drizzle/db";
 import { eq } from "drizzle-orm";
 import { track, artist, album } from "@/drizzle/schema";
 
-export async function GetTrack(id: string) {
+async function getFromDB(id: string) {
     const resp = await db.query.track.findFirst({
         where: eq(track.id, id),
         with: {
@@ -11,15 +11,23 @@ export async function GetTrack(id: string) {
             album: true
         }
     })
+    return resp;
+}
+
+export async function GetTrack(id: string) {
+    let resp = await getFromDB(id);
 
     if (!resp) {
         const res = await (await fetch(`https://api.deezer.com/track/${id}`)).json();
 
         if (res?.error) throw new Error('Not Found');
 
+        resp = await getFromDB(id);
+        if (resp) return resp;
+
         const data = res as Track;
 
-        const createdTrack = await db.transaction(async (t) => {
+        await db.transaction(async (t) => {
             await t.insert(artist).values({
                 id: String(data.artist.id),
                 name: data.artist.name,
@@ -35,7 +43,7 @@ export async function GetTrack(id: string) {
                 artistId: String(data.artist.id)
             }).onConflictDoNothing();
 
-            const d = await db.insert(track).values({
+            await db.insert(track).values({
                 id: String(data.id),
                 title: data.title,
                 artistId: String(data.artist.id),
@@ -43,14 +51,11 @@ export async function GetTrack(id: string) {
                 duration: data.duration,
                 preview: data.preview,
                 type: "deezer"
-            }).returning({
-                id: track.id
             }).onConflictDoNothing();
-
-            return d[0];
         })
 
-        return createdTrack;
+        resp = await getFromDB(id);
+        return resp;
     } else {
         return resp;
     }

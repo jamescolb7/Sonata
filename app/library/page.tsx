@@ -8,6 +8,7 @@ import { eq } from "drizzle-orm"
 import { Metadata } from "next"
 import { cookies } from "next/headers"
 import Link from "next/link"
+import PlaylistCreator from "./playlistCreator"
 
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
@@ -114,7 +115,7 @@ export default async function Library() {
 					<Separator className="my-4" />
 					<CardCollection>
 						<div className="cursor-pointer">
-							{/* <PlaylistCreate /> */}
+							<PlaylistCreator />
 						</div>
 						{playlistsData && playlistsData.map((item, index) => {
 							return (

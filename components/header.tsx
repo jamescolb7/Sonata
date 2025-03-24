@@ -7,6 +7,7 @@ import { Button } from "./ui/button"
 import { PlayerAtom, QueueAtom, QueueIndexAtom } from "@/lib/state"
 import { AudioLines, Shuffle } from "lucide-react";
 import { Track } from "@/types/Track";
+import { ShuffleTracks } from "@/lib/utils";
 
 interface HeaderType extends React.HTMLAttributes<HTMLElement> {
 	img: string
@@ -36,10 +37,9 @@ export default function Header({
 
 	const shuffle = () => {
 		if (!tracks) return;
-		for (let i = tracks.length - 1; i > 0; i--) {
-			const j = Math.floor(Math.random() * (i + 1));
-			[tracks[i], tracks[j]] = [tracks[j], tracks[i]];
-		}
+
+		tracks = ShuffleTracks(tracks);
+
 		setPlayer(tracks[0]);
 		setQueueIndex(0);
 		setQueue(tracks);
