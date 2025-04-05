@@ -14,11 +14,15 @@ export function CSRF(req: Request, res: Response, next: NextFunction) {
 }
 
 export async function Auth(req: Request, res: Response, next: NextFunction) {
-	const sessionId = lucia.readSessionCookie(req.headers.cookie ?? "");
+	let sessionId = lucia.readSessionCookie(req.headers.cookie ?? "");
 	if (!sessionId) {
-		res.locals.user = null;
-		res.locals.session = null;
-		return next();
+		sessionId = lucia.readBearerToken(req.headers.authorization ?? "");
+
+		if (!sessionId) {
+			res.locals.user = null;
+			res.locals.session = null;
+			return next();
+		}
 	}
 	const { session, user } = await lucia.validateSession(sessionId);
 	if (session && session.fresh) {
