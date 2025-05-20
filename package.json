@@ -54,7 +54,7 @@
     "@types/react-dom": "19.0.4",
     "bun-types": "^1.1.34",
     "cross-env": "^7.0.3",
-    "drizzle-kit": "^0.28.0",
+    "drizzle-kit": "^0.31.1",
     "eslint": "^8",
     "eslint-config-next": "15.2.1",
     "postcss": "^8",
