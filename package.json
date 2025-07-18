@@ -35,7 +35,7 @@
     "jotai": "2.8.0",
     "lucia": "^3.2.2",
     "lucide-react": "^0.456.0",
-    "morgan": "^1.10.0",
+    "morgan": "^1.10.1",
     "next": "^15.2.4",
     "nextjs-toploader": "^3.7.15",
     "react": "^19.0.0",
