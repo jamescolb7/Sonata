@@ -160,13 +160,11 @@ function Time({ audio, time }: { audio: React.RefObject<HTMLAudioElement | null>
   )
 }
 
-const Actions = memo(function Actions({ audio, track }: { audio: React.RefObject<HTMLAudioElement | null>, track: Partial<Track> }) {
-  const [volume, setVolume] = useState(100);
-
+const Actions = memo(function Actions({ volume, setVolume, audio, track }: { volume: number, setVolume: React.Dispatch<React.SetStateAction<number>>, audio: React.RefObject<HTMLAudioElement | null>, track: Partial<Track> }) {
   const changeVolume = (e: number[]) => {
-    setVolume(e[0]);
+    setVolume(e[0] / 100);
     if (!audio.current) return;
-    audio.current.volume = volume / 100;
+    audio.current.volume = volume;
   }
 
   return <>
@@ -198,7 +196,7 @@ const Actions = memo(function Actions({ audio, track }: { audio: React.RefObject
       </Tooltip>
     </TooltipProvider>
     {volume === 0 ? <Volume className="h-8 w-8" /> : volume < 50 ? <Volume1 className="h-8 w-8"></Volume1> : <Volume2 className="h-8 w-8"></Volume2>}
-    <Slider className="w-[100px]" onValueChange={changeVolume} defaultValue={[volume]} max={100} step={0.01}></Slider>
+    <Slider className="w-[100px]" onValueChange={changeVolume} value={[volume * 100]} defaultValue={[volume]} max={100} step={0.01}></Slider>
   </>
 })
 
@@ -206,6 +204,7 @@ export default function Player() {
   const [playing, setPlaying] = useState(false);
   const [time, setTime] = useState(0);
   const [defaultPlugin, setDefaultPlugin] = useState("deezer");
+  const [volume, setVolume] = useState(100);
 
   const queue = useAtomValue(QueueAtom);
   const [shuffledQueue, setShuffledQueue] = useAtom(ShuffleQueueAtom);
@@ -295,6 +294,52 @@ export default function Player() {
     })
   }, [])
 
+  useEffect(() => {
+    //Keyboard shortcuts
+
+    const keyboard = (e: KeyboardEvent) => {
+      const elem = document.activeElement as unknown as { type?: string };
+      if (elem && elem.type === "text") return;
+
+      if (!audioRef.current) return;
+
+      switch (e.code) {
+        case "Space":
+          e.preventDefault();
+          setPlaying(!playing);
+          if (playing) return audioRef.current.pause();
+          audioRef.current.play();
+          break;
+        case "ArrowRight":
+          e.preventDefault();
+          audioRef.current.currentTime = audioRef.current.currentTime + 5;
+          break;
+        case "ArrowLeft":
+          e.preventDefault();
+          audioRef.current.currentTime = audioRef.current.currentTime - 5;
+          break;
+        case "ArrowUp":
+          e.preventDefault();
+          if (audioRef.current.volume + 0.1 >= 1) return;
+          audioRef.current.volume = audioRef.current.volume + 0.1;
+          setVolume(audioRef.current.volume + 0.1);
+          break;
+        case "ArrowDown":
+          e.preventDefault();
+          if (audioRef.current.volume - 0.1 <= 0) return;
+          audioRef.current.volume = audioRef.current.volume - 0.1;
+          setVolume(audioRef.current.volume - 0.1);
+          break;
+      }
+    }
+
+    document.addEventListener("keydown", keyboard)
+
+    return () => {
+      return document.removeEventListener("keydown", keyboard);
+    }
+  }, [playing])
+
   return <>
     <div className="fixed w-full bottom-0 border-t bg-background align-center z-[12] h-[89px]">
       <ProgressBar audio={audioRef} time={time} />
@@ -306,7 +351,7 @@ export default function Player() {
           <Controls playing={playing} action={playerAction} />
         </div>
         <div className="justify-end flex items-center space-x-3 fixed invisible md:static md:visible">
-          <Actions audio={audioRef} track={track} />
+          <Actions volume={volume} setVolume={setVolume} audio={audioRef} track={track} />
           <Time audio={audioRef} time={time} />
         </div>
       </div>
