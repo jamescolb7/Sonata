@@ -6,15 +6,17 @@ function LyricsCollection({ data }: { data: { time: number, text: string }[] }) 
     const [time, setTime] = useState(0);
     const [selectedLyric, setSelectedLyric] = useState(-1);
 
+    const audio = document.querySelector("audio");
+
     useEffect(() => {
         const changeTime = () => {
-            setTime(document.querySelector('audio')?.currentTime || 0);
+            setTime(audio?.currentTime || 0);
         }
 
-        document.querySelector('audio')?.addEventListener('timeupdate', changeTime);
+        audio?.addEventListener('timeupdate', changeTime);
 
         return () => {
-            document.querySelector('audio')?.removeEventListener('timeupdate', changeTime);
+            audio?.removeEventListener('timeupdate', changeTime);
         }
     }, []);
 
@@ -29,7 +31,10 @@ function LyricsCollection({ data }: { data: { time: number, text: string }[] }) 
                     if (selectedLyric !== i) setSelectedLyric(i);
                 };
                 return (
-                    <h1 id={`lyric_${i}`} key={i} className={`transition text-2xl mb-3 font-semibold ${selectedLyric === i ? " opacity-100" : "opacity-50 scale-95"}`}>{lyric.text}</h1>
+                    <h1 id={`lyric_${i}`} key={i} onClick={() => {
+                        if (audio === null) return;
+                        audio.currentTime = lyric.time;
+                    }} className={`transition text-2xl mb-3 cursor-pointer font-semibold ${selectedLyric === i ? " opacity-100" : "opacity-50 scale-95"}`}>{lyric.text}</h1>
                 )
             })}
         </>
