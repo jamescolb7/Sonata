@@ -8,5 +8,6 @@ export interface Track {
 	contributors?: Artist[],
 	artist: Artist,
 	duration: number,
-	preview: string
+	preview: string,
+	explicit_lyrics?: boolean
 }
